@@ -280,9 +280,9 @@
                         </textFieldCell>
                     </textField>
                     <button id="bJr-53-hKb">
-                        <rect key="frame" x="18" y="132" width="214" height="18"/>
+                        <rect key="frame" x="18" y="132" width="209" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Business ad (type impress below)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="urX-qh-fVf">
+                        <buttonCell key="cell" type="check" title="Business ad (type imprint below)" bezelStyle="regularSquare" imagePosition="left" inset="2" id="urX-qh-fVf">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="controlContent"/>
                         </buttonCell>
