@@ -93,6 +93,12 @@ class dbfunc{
                 sqlite3_exec(db, "CREATE UNIQUE INDEX IF NOT EXISTS conversations_text_idx on conversations_text (account,cid,receiveddate)", nil, nil, nil)
             }
             
+            if sqlite3_exec(db, "create table if not exists options (id integer primary key autoincrement, optionname text, optionvalue text)", nil, nil, nil) != SQLITE_OK {
+                let errmsg = String.fromCString(sqlite3_errmsg(db))
+                println("error creating table: \(errmsg)")
+            } else {
+                sqlite3_exec(db, "CREATE UNIQUE INDEX IF NOT EXISTS options_idx on options (optionname)", nil, nil, nil)
+            }
             
             if sqlite3_exec(db, "create table if not exists searchquery (id integer primary key autoincrement, active integer NOT NULL DEFAULT 1, category text, category_text text, desc text, sort integer NOT NULL DEFAULT 0, query text, ziporcity text, distance integer NOT NULL DEFAULT 0, created datetime, modified datetime, ownurl text, fromprice integer NOT NULL DEFAULT 0, toprice integer NOT NULL DEFAULT 0)", nil, nil, nil) != SQLITE_OK {
                 let errmsg = String.fromCString(sqlite3_errmsg(db))
@@ -176,6 +182,38 @@ class dbfunc{
          
         return true
     }
+    
+    func set_option(oname : String, oval : String) -> Bool {
+        var statement: COpaquePointer = nil
+        var sText = "select id from options WHERE optionname=" + self.quotedstring(oname);
+        if sqlite3_prepare_v2(db, sText, -1, &statement, nil) != SQLITE_OK {
+            let errmsg = String.fromCString(sqlite3_errmsg(db))
+            println("error preparing select: \(errmsg)")
+        }
+        if sqlite3_step(statement) == SQLITE_ROW {
+            let updateId : String = self.textAt(0,statementx: statement)
+            let ok : Bool = self.executesql("UPDATE options SET optionvalue=" + self.quotedstring(oval) + " WHERE optionname=" + self.quotedstring(oname))
+            return ok
+        } else {
+            let ok : Bool = self.executesql("INSERT INTO options (optionvalue,optionname) VALUES (" + self.quotedstring(oval) + "," + self.quotedstring(oname)+")")
+            return ok
+        }
+        
+    }
+    
+    func get_option(oname : String, defaultstr : String) -> String {
+        var statement: COpaquePointer = nil
+        var sText = "select optionvalue from options WHERE optionname=" + self.quotedstring(oname);
+        if sqlite3_prepare_v2(db, sText, -1, &statement, nil) != SQLITE_OK {
+            let errmsg = String.fromCString(sqlite3_errmsg(db))
+            println("error preparing select: \(errmsg)")
+        }
+        if sqlite3_step(statement) == SQLITE_ROW {
+            return self.textAt(0,statementx: statement)
+        }
+        return defaultstr
+    }
+    
     
     func sql_read_accounts(sqlFilter : String) -> [[String : String]]{
         var statement: COpaquePointer = nil

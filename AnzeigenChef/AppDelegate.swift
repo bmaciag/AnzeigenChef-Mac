@@ -25,7 +25,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     @IBOutlet weak var currentFolderLabel: NSTextField!
     @IBOutlet weak var messControl: MessageControl!
     @IBOutlet weak var syncButton: NSToolbarItem!
-    
+    @IBOutlet weak var sortMenu: NSMenu!
+    @IBOutlet weak var rightView: NSView!
     
     var my_new_edit_ebay : new_edit_ebay!
     var mydb = dbfunc()
@@ -43,6 +44,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     var cat_start_expandlist : NSMutableArray = []
     var searchCat : catitem!
     var my_new_edit_search : new_edit_search!
+    var currentOrderColumn : String = "id"
+    var currentOrderWay : String = "DESC"
  
     
     private let kNodesPBoardType = "myNodesPBoardType"
@@ -78,6 +81,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         self.loadSearch()
         self.updateCatCount()
         
+        self.currentOrderColumn = self.mydb.get_option("currentOrderColumn", defaultstr: "id")
+        self.currentOrderWay = self.mydb.get_option("currentOrderWay", defaultstr: "DESC")
         
         self.catlist.setDataSource(self)
         self.catlist.reloadData()
@@ -96,6 +101,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         }
         
         cat_start_expandlist.removeAllObjects()
+        
+       
         
         // self.syncbutton(self)
     }
@@ -504,7 +511,100 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         return true
     }
     
+    func tableView(tableView: NSTableView, didClickTableColumn tableColumn: NSTableColumn){
+        
+        if self.currentOrderColumn == "id" {
+            self.sortMenu.itemWithTag(911)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(911)?.state = 0
+        }
+        
+        if self.currentOrderColumn == "enddate" {
+            self.sortMenu.itemWithTag(912)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(912)?.state = 0
+        }
+        
+        if self.currentOrderColumn == "watchcount" {
+            self.sortMenu.itemWithTag(913)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(913)?.state = 0
+        }
+        
+        if self.currentOrderColumn == "viewcount" {
+            self.sortMenu.itemWithTag(914)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(914)?.state = 0
+        }
+        
+        if self.currentOrderColumn == "adtype" {
+            self.sortMenu.itemWithTag(915)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(915)?.state = 0
+        }
+        
+        if self.currentOrderColumn == "messagecount" {
+            self.sortMenu.itemWithTag(916)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(916)?.state = 0
+        }
+        
+        if self.currentOrderWay == "ASC" {
+            self.sortMenu.itemWithTag(930)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(930)?.state = 0
+        }
+        
+        if self.currentOrderWay == "DESC" {
+            self.sortMenu.itemWithTag(931)?.state = 1
+        } else {
+            self.sortMenu.itemWithTag(931)?.state = 0
+        }
+        
+        self.sortMenu.popUpMenuPositioningItem(nil, atLocation: NSPoint(x: 0, y: self.rightView.bounds.origin.y + self.rightView.bounds.size.height - 30 /* BOX */ - 20), inView: self.rightView)
+    }
+    
  
+    @IBAction func reOrderTableData(sender: AnyObject) {
+        if sender.tag() == 911 {
+            self.currentOrderColumn = "id"
+        }
+        
+        if sender.tag() == 912 {
+            self.currentOrderColumn = "enddate"
+        }
+        
+        if sender.tag() == 913 {
+            self.currentOrderColumn = "watchcount"
+        }
+        
+        if sender.tag() == 914 {
+            self.currentOrderColumn = "viewcount"
+        }
+        
+        if sender.tag() == 915 {
+            self.currentOrderColumn = "adtype"
+        }
+        
+        if sender.tag() == 916 {
+            self.currentOrderColumn = "messagecount"
+        }
+        
+        if sender.tag() == 930 {
+            self.currentOrderWay = "ASC"
+        }
+        
+        if sender.tag() == 931 {
+            self.currentOrderWay = "DESC"
+        }
+        
+        self.mydb.set_option("currentOrderColumn", oval: self.currentOrderColumn)
+        self.mydb.set_option("currentOrderWay", oval: self.currentOrderWay)
+        
+        
+        self.load_data(self.currentFilter)
+    }
+    
     
     
     //MARK: CatList DragDROP!
@@ -1408,7 +1508,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     }
     
     func loadSearch(){
-        let ldata = mydb.sql_read_select("select * from searchquery ORDER BY sort ASC")
+        let ldata = mydb.sql_read_select("select * from searchquery")
         for var i=0; i<ldata.count; ++i{
             let newcat = self.addcat(ldata[i]["desc"]!, myid: ldata[i]["id"]!, myimg: "Tag - Blue_48x48", cparent: searchCat, is_template: false)
         }
@@ -1456,9 +1556,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             newFilter += " WHERE " + filterStr
         }
         
-        if self.currentFolderParentID == -5 && newFilter.contains("ORDER BY") == false{
-            newFilter += " ORDER BY id DESC"
-        }
+        newFilter += " ORDER BY " + self.currentOrderColumn + " " + self.currentOrderWay
         
         let tempArray = self.mydb.sql_read_select(newFilter)
         tableDataArray = NSMutableArray.new()

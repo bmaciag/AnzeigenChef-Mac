@@ -28,6 +28,8 @@
                 <outlet property="itemstableview" destination="zZQ-O4-AVI" id="N9h-tx-F4p"/>
                 <outlet property="messControl" destination="qKW-OP-5f0" id="AEc-bs-OXn"/>
                 <outlet property="progressBar" destination="cSq-hv-iGd" id="wJ9-ER-aPP"/>
+                <outlet property="rightView" destination="bSo-EB-bAH" id="9FG-aJ-IZg"/>
+                <outlet property="sortMenu" destination="tYB-De-Id1" id="0Vo-Fi-zYq"/>
                 <outlet property="syncButton" destination="rua-wk-LT5" id="Pdj-b8-eMH"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
@@ -442,7 +444,7 @@
                                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                     <tableColumns>
                                                                         <tableColumn identifier="pricetype" editable="NO" width="414" minWidth="10" maxWidth="3.4028234663852886e+38" id="tb5-c5-lEq">
-                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Itemslist">
+                                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Sort by addtime">
                                                                                 <font key="font" metaFont="smallSystem"/>
                                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -944,7 +946,7 @@
             <connections>
                 <outlet property="delegate" destination="Voe-Tx-rLC" id="AKJ-Nb-v0o"/>
             </connections>
-            <point key="canvasLocation" x="880" y="190.5"/>
+            <point key="canvasLocation" x="1246.5" y="410.5"/>
         </menu>
         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="eav-5l-gMk">
             <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
@@ -952,6 +954,63 @@
             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Circle - Green_48x48" id="fm6-x7-Loj"/>
             <point key="canvasLocation" x="479" y="-87"/>
         </imageView>
+        <menu id="tYB-De-Id1">
+            <items>
+                <menuItem title="Addtime" tag="911" id="JWe-8C-D6o">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="Di8-2S-vb8"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Endtime" tag="912" id="TUi-Ek-BxR">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="zNd-3V-mFT"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Watchcount" tag="913" id="f4I-P7-su0">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="NyA-2q-yef"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Viewcount" tag="914" id="rHe-Gy-qEA">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="O4B-vh-QL0"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Adtype" tag="915" id="EWK-1a-HYv">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="w3S-X6-4Uf"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Messagecount" tag="916" id="EjH-sp-oCk">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="gTI-PT-yrL"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="oft-dH-yaQ"/>
+                <menuItem title="Ascending" tag="930" id="nA7-rJ-T18">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="R6u-ax-98S"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Descending" tag="931" id="2Ou-I9-pfs">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="reOrderTableData:" target="Voe-Tx-rLC" id="ipB-eZ-R1h"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <connections>
+                <outlet property="delegate" destination="Voe-Tx-rLC" id="rp7-wc-ya6"/>
+            </connections>
+            <point key="canvasLocation" x="1252" y="718.5"/>
+        </menu>
     </objects>
     <resources>
         <image name="Add-ticket" width="48" height="48"/>
