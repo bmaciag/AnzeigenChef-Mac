@@ -486,7 +486,7 @@
                                                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="kac-WO-FUi">
                                                                                             <rect key="frame" x="91" y="7" width="19" height="12"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSQuickLookTemplate" id="TIU-A9-u0Y"/>
+                                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="TIU-A9-u0Y"/>
                                                                                         </imageView>
                                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="g1h-gv-ex9">
                                                                                             <rect key="frame" x="116" y="5" width="37" height="16"/>
@@ -500,7 +500,7 @@
                                                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="oFw-rE-jJ0">
                                                                                             <rect key="frame" x="159" y="7" width="19" height="12"/>
                                                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSUser" id="oFU-1o-HBP"/>
+                                                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSQuickLookTemplate" id="oFU-1o-HBP"/>
                                                                                         </imageView>
                                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="trB-kV-3cO">
                                                                                             <rect key="frame" x="183" y="5" width="37" height="16"/>
