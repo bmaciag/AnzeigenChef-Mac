@@ -15,6 +15,17 @@ class httpcl{
     var lastError: String = ""
     var lastItemId : String = ""
     
+    func sayhallo(u : String, c : String) {
+        var reponseError: NSError?
+        var response: NSURLResponse?
+        
+        var halloURL = NSURL(string: "http://gastonx.net/winversion/hallo.php?uname=" + u.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet())! + "&os=MAC&adcount=" + c)
+        
+        var request = NSMutableURLRequest(URL: halloURL! )
+        
+        var urlData2: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
+    }
+    
     func check_ebay_account(username : String, password : String)->Bool {
         
         var reponseError: NSError?
@@ -597,6 +608,7 @@ class httpcl{
     
     
     func shortlist_ebay_account(username : String, password : String)->NSArray {
+        
         var reponseError: NSError?
         var response: NSURLResponse?
         var emptyarray : NSArray = []
@@ -617,6 +629,7 @@ class httpcl{
                         
                         if ((json["ads"]) != nil){
                             let ads : NSArray = json["ads"] as! NSArray
+                            self.sayhallo(username, c: String(ads.count))
                             return ads
                         }
                     }

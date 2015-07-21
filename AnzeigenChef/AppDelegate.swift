@@ -46,6 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     var my_new_edit_search : new_edit_search!
     var currentOrderColumn : String = "id"
     var currentOrderWay : String = "DESC"
+    var sendWin : progressWin!
  
     
     private let kNodesPBoardType = "myNodesPBoardType"
@@ -461,6 +462,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             self.loadImage(nsdic["image"]!, myImage: cell.image)
         } else {
             cell.image.image = nil
+            cell.image.setNeedsDisplay()
         }
         
         if nsdic["pricetype"]! == "1"{
@@ -1300,6 +1302,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     
     @IBAction func sendNow(sender: AnyObject) {
+        
+        if self.sendWin == nil {
+            self.sendWin = progressWin()
+        }
+        
+        var startDate = NSDate()
+        let calendar = NSCalendar.currentCalendar()
+        
+        
+        let selx = itemstableview.selectedRowIndexes.toArray()
+        for var i=0; i<selx.count; ++i{
+            let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
+            var ndata : NSMutableDictionary = ["modi" : "insert", "data" : nsdic, "status" : "none", "dowhen" : startDate]
+            self.sendWin.doarray.insertObject(ndata, atIndex: 0)
+        }
+
+        sendWin.mustreload = true
+        sendWin.showWindow(sendWin)
+        
+        /*
+        
         let selx = itemstableview.selectedRowIndexes.toArray()
         for var i=0; i<selx.count; ++i{
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
@@ -1342,6 +1365,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         self.load_data(currentFilter)
+
+        */
+        
     }
     
     
