@@ -454,8 +454,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         cell.watchLabel.stringValue = nsdic["watchcount"]!
         cell.visitLabel.stringValue = nsdic["viewcount"]!
         cell.postalCodeLabel.stringValue = nsdic["postalcode"]!
-        if (nsdic["company"]! == "1"){
-            cell.postalCodeLabel.stringValue = nsdic["postalcode"]! + " (GW)"
+        if (nsdic["company"] != nil){
+            if (nsdic["company"]! == "1"){
+                cell.postalCodeLabel.stringValue = nsdic["postalcode"]! + " (GW)"
+            }
         }
         
         if (nsdic["image"] != ""){
@@ -1302,24 +1304,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     
     @IBAction func sendNow(sender: AnyObject) {
-        
+        var wasnil = false
         if self.sendWin == nil {
             self.sendWin = progressWin()
+            wasnil = true
         }
-        
-        var startDate = NSDate()
-        let calendar = NSCalendar.currentCalendar()
         
         
         let selx = itemstableview.selectedRowIndexes.toArray()
         for var i=0; i<selx.count; ++i{
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
-            var ndata : NSMutableDictionary = ["modi" : "insert", "data" : nsdic, "status" : "none", "dowhen" : startDate]
+            var ndata : NSMutableDictionary = ["modi" : "insert", "data" : nsdic, "status" : "none"]
             self.sendWin.doarray.insertObject(ndata, atIndex: 0)
         }
 
         sendWin.mustreload = true
         sendWin.showWindow(sendWin)
+        if wasnil {
+            sendWin.checkJob()
+        }
         
         /*
         
