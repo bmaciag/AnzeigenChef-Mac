@@ -1587,6 +1587,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         newFilter += " ORDER BY " + self.currentOrderColumn + " " + self.currentOrderWay
         
+        var otext = ""
+        if (self.currentOrderWay == "ASC"){
+            otext = NSLocalizedString("ascending", comment: "orderway asc")
+        } else {
+            otext = NSLocalizedString("descending", comment: "orderway desc")
+        }
+        
+        (self.itemstableview.tableColumns.last as! NSTableColumn).title = NSLocalizedString("Sort by ", comment: "orderby") + self.currentOrderColumn + " " + otext
+        
         let tempArray = self.mydb.sql_read_select(newFilter)
         tableDataArray = NSMutableArray.new()
         for var i = 0; i < tempArray.count; ++i {
