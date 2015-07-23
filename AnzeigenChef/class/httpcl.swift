@@ -31,7 +31,7 @@ class httpcl{
         var reponseError: NSError?
         var response: NSURLResponse?
         
-        var ebayUrl = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/m-einloggen.html")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/m-einloggen.html")
         
         var request = NSMutableURLRequest(URL: ebayUrl! )
         
@@ -97,8 +97,8 @@ class httpcl{
             }
         }
  
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/s-suchanfrage.html?" + stringPost)
-        println("http://kleinanzeigen.ebay.de/anzeigen/s-suchanfrage.html?" + stringPost)
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/s-suchanfrage.html?" + stringPost)
+        println("https://www.ebay-kleinanzeigen.de/anzeigen/s-suchanfrage.html?" + stringPost)
         
         if (sdate["ownurl"]! != ""){
             ebayUrl = NSURL(string: sdate["ownurl"]!)
@@ -181,7 +181,7 @@ class httpcl{
     func getcats_ebay()->NSDictionary{
         var reponseError: NSError?
         var response: NSURLResponse?
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/p-anzeige-aufgeben.html")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-aufgeben.html")
         let emptyarray : NSDictionary = ["name" : "nix", "identifier" : "-1", "children" : []]
         
         var request = NSMutableURLRequest(URL: ebayUrl! )
@@ -230,9 +230,9 @@ class httpcl{
         var reponseError: NSError?
         var response: NSURLResponse?
         
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-anzeige-pausieren.json")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-anzeige-pausieren.json")
         if (whatDo == "active"){
-            ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-anzeige-fortsetzen.json")
+            ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-anzeige-fortsetzen.json")
         }
         
         var request = NSMutableURLRequest(URL: ebayUrl! )
@@ -281,7 +281,7 @@ class httpcl{
     func stop_ad_ebay(adId : String)->Bool {
         var reponseError: NSError?
         var response: NSURLResponse?
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-anzeigen-loeschen.json?ids="+adId+"&pageNum=1")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-anzeigen-loeschen.json?ids="+adId+"&pageNum=1")
         
         var request = NSMutableURLRequest(URL: ebayUrl! )
         var stringPost="ids="+adId
@@ -332,7 +332,7 @@ class httpcl{
         
         
         // Step 1: Open
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/p-anzeige-aufgeben.html")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-aufgeben.html")
         var request = NSMutableURLRequest(URL: ebayUrl! )
         request.timeoutInterval = 60
         request.HTTPShouldHandleCookies=true
@@ -345,12 +345,12 @@ class httpcl{
                 var responseData:NSString  = NSString(data:urlData!, encoding:NSUTF8StringEncoding)!
                 
                 // Step 2: Send data...
-                var ebayUrl2 = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/p-anzeige-aufgeben-schritt2.html")
+                var ebayUrl2 = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-aufgeben-schritt2.html")
                 
                 // NOW IS EDIT, NOT NEW!
                 if (listData["itemid"] as! String != ""){ // adId
                     let itemid = listData["itemid"] as! String
-                    ebayUrl2 = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/p-anzeige-bearbeiten.html?adId=\(itemid)")
+                    ebayUrl2 = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-bearbeiten.html?adId=\(itemid)")
                 }
                 var request = NSMutableURLRequest(URL: ebayUrl2! )
                 request.setValue(ebayUrl?.absoluteString, forHTTPHeaderField: "Referer")
@@ -421,7 +421,7 @@ class httpcl{
                                 PostData.addObject("posterType=PRIVATE")
                             }
                             
-                            var ebayUrl3 = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/p-anzeige-abschicken.html")
+                            var ebayUrl3 = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-abschicken.html")
                             var request = NSMutableURLRequest(URL: ebayUrl3! )
                             request.setValue(ebayUrl2?.absoluteString, forHTTPHeaderField: "Referer")
                             request.timeoutInterval = 60
@@ -481,10 +481,10 @@ class httpcl{
         let boundaryConstant = "moxieboundary"+NSUUID().UUIDString;
         let tempFileName = NSUUID().UUIDString
         
-        let url:NSURL? = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/p-bild-hochladen.html")
+        let url:NSURL? = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-bild-hochladen.html")
         let cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalCacheData
         var request = NSMutableURLRequest(URL: url!, cachePolicy: cachePolicy, timeoutInterval: 20.0)
-        request.setValue("https://kleinanzeigen.ebay.de/anzeigen/p-anzeige-aufgeben-schritt2.html", forHTTPHeaderField: "Referer")
+        request.setValue("https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-aufgeben-schritt2.html", forHTTPHeaderField: "Referer")
         request.setValue("multipart/form-data; boundary=----"+boundaryConstant, forHTTPHeaderField: "Content-Type")
         request.HTTPMethod = "POST"
         
@@ -560,7 +560,7 @@ class httpcl{
         var reponseError: NSError?
         var err: NSError?
         var response: NSURLResponse?
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-nachricht-schreiben.json")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-nachricht-schreiben.json")
         
         var request = NSMutableURLRequest(URL: ebayUrl! )
         
@@ -613,7 +613,7 @@ class httpcl{
         var response: NSURLResponse?
         var emptyarray : NSArray = []
         
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-meine-anzeigen-verwalten.json?pageSize=99999")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-meine-anzeigen-verwalten.json?pageSize=99999")
         var request = NSMutableURLRequest(URL: ebayUrl! )
         
         var urlData2: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
@@ -650,7 +650,7 @@ class httpcl{
         var response: NSURLResponse?
         var emptyarray : NSArray = []
        
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-konversationen-uebersicht.json?vl=9526")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-konversationen-uebersicht.json?vl=9526")
         var request = NSMutableURLRequest(URL: ebayUrl! )
  
         var urlData: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
@@ -685,7 +685,7 @@ class httpcl{
         var response: NSURLResponse?
         var emptyarray : NSArray = []
         
-        var ebayUrl = NSURL(string: "http://kleinanzeigen.ebay.de/anzeigen/m-konversation.json?id=" + cid)
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-konversation.json?id=" + cid)
         var request = NSMutableURLRequest(URL: ebayUrl! )
 
         var urlData: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
@@ -718,7 +718,7 @@ class httpcl{
         var emptyDic : NSMutableDictionary = ["Ack" : "FAIL"]
         var reponseError: NSError?
         var response: NSURLResponse?
-        var ebayUrl = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/p-anzeige-bearbeiten.html?adId=" + adId)
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/p-anzeige-bearbeiten.html?adId=" + adId)
         var request = NSMutableURLRequest(URL: ebayUrl! )
         
         var urlData2: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
@@ -870,7 +870,7 @@ class httpcl{
     func logout_ebay_account() -> Bool{
         var reponseError: NSError?
         var response: NSURLResponse?
-        var ebayUrl = NSURL(string: "https://kleinanzeigen.ebay.de/anzeigen/m-abmelden.html")
+        var ebayUrl = NSURL(string: "https://www.ebay-kleinanzeigen.de/anzeigen/m-abmelden.html")
         var request = NSMutableURLRequest(URL: ebayUrl! )
         
         var urlData2: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
