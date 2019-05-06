@@ -49,7 +49,7 @@ class picselect: NSWindowController {
     
 
     func loadPics(){
-        for var i = 0; i < self.picload.count; ++i {
+        for i in 0 ..< self.picload.count {
             let fname : String = self.picload[i] as! String
             if i == 0 {
                 self.pic1.loadPicFromFile(fname)

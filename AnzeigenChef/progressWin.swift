@@ -10,7 +10,7 @@ import Cocoa
 
 class progressWin: NSWindowController {
 
-    var mytimer : NSTimer!
+    var mytimer : Timer!
     var doarray : NSMutableArray = []
     var mydb = dbfunc()
     var myhttpcl = httpcl()
@@ -23,7 +23,7 @@ class progressWin: NSWindowController {
     override func windowDidLoad() {
         super.windowDidLoad()
         self.window!.level = Int(CGWindowLevelForKey(Int32(kCGStatusWindowLevelKey)))
-        self.mytimer = NSTimer.scheduledTimerWithTimeInterval(20, target: self, selector: Selector("checkJob"), userInfo: nil, repeats: true)
+        self.mytimer = Timer.scheduledTimerWithTimeInterval(20, target: self, selector: Selector("checkJob"), userInfo: nil, repeats: true)
     }
     
     convenience init(){
@@ -32,10 +32,10 @@ class progressWin: NSWindowController {
     
     
     func checkJob(){
-        if self.cancelButton.enabled == false {
+        if self.cancelButton.isEnabled == false {
             self.doarray.removeAllObjects()
             self.tableView.reloadData()
-            self.cancelButton.enabled = true
+            self.cancelButton.isEnabled = true
             self.window!.close()
         }
         
@@ -44,7 +44,7 @@ class progressWin: NSWindowController {
             self.mustreload = false
         }
         var found : Bool = false
-        for var i=doarray.count-1; i > -1; --i{
+        for i in (0 ... (doarray.count-1)).reversed() {
             if doarray.objectAtIndex(i).objectForKey("status") as! String == "none" {
                 let nsdic : [String : String] = doarray.objectAtIndex(i).objectForKey("data")! as! [String : String]
                 (self.doarray.objectAtIndex(i) as! NSMutableDictionary).setObject("progress",forKey: "status")
@@ -95,7 +95,7 @@ class progressWin: NSWindowController {
 
     
     @IBAction func cancelAction(sender: AnyObject) {
-        self.cancelButton.enabled = false
+        self.cancelButton.isEnabled = false
     }
     
     func numberOfRowsInTableView(tableView: NSTableView) -> Int{
@@ -103,37 +103,37 @@ class progressWin: NSWindowController {
     }
     
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView?{
-        let cell = tableView.makeViewWithIdentifier("progressWinCell", owner: self) as! progressWinCell!
+        let cell = tableView.make(withIdentifier: "progressWinCell", owner: self) as! progressWinCell?
         
         
         
-        let nsdic : [String : String] = doarray.objectAtIndex(row).objectForKey("data")! as! [String : String]
+        let nsdic : [String : String] = (doarray.objectAtIndex(row) as AnyObject).objectForKey("data")! as! [String : String]
 
         
-        cell.titleLabel.stringValue = nsdic["title"]!
+        cell?.titleLabel.stringValue = nsdic["title"]!
         
-        cell.titleLabel2.stringValue = "Waiting..."
-        if (doarray.objectAtIndex(row).objectForKey("statustext") != nil){
-            cell.titleLabel2.stringValue = doarray.objectAtIndex(row).objectForKey("statustext") as! String
+        cell?.titleLabel2.stringValue = "Waiting..."
+        if ((doarray.objectAtIndex(row) as AnyObject).objectForKey("statustext") != nil){
+            cell?.titleLabel2.stringValue = doarray.objectAtIndex(row).objectForKey("statustext") as! String
         }
         
-        if doarray.objectAtIndex(row).objectForKey("status") as! String == "none" {
-            cell.image.image = NSImage(named: "Open-folder-full")
+        if (doarray.objectAtIndex(row) as AnyObject).objectForKey("status") as! String == "none" {
+            cell?.image.image = NSImage(named: "Open-folder-full")
         }
         
-        if doarray.objectAtIndex(row).objectForKey("status") as! String == "done" {
-            cell.image.image = NSImage(named: "Open-folder-accept")
+        if (doarray.objectAtIndex(row) as AnyObject).objectForKey("status") as! String == "done" {
+            cell?.image.image = NSImage(named: "Open-folder-accept")
         }
         
-        if doarray.objectAtIndex(row).objectForKey("status") as! String == "fail" {
-            cell.image.image = NSImage(named: "Open-folder-warning")
+        if (doarray.objectAtIndex(row) as AnyObject).objectForKey("status") as! String == "fail" {
+            cell?.image.image = NSImage(named: "Open-folder-warning")
         }
         
-        if doarray.objectAtIndex(row).objectForKey("status") as! String == "progress" {
-            cell.image.image = NSImage(named: "Order")
+        if (doarray.objectAtIndex(row) as AnyObject).objectForKey("status") as! String == "progress" {
+            cell?.image.image = NSImage(named: "Order")
         }
         
-        doarray.objectAtIndex(row).setObject(cell.image, forKey: "myimage")
+        (doarray.objectAtIndex(row) as AnyObject).setObject(cell.image, forKey: "myimage")
         
         return cell
     }

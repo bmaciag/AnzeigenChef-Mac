@@ -48,21 +48,21 @@ class new_edit_ebay: NSWindowController {
     
     override func awakeFromNib() {
         catSelButton.toolTip = ""
-        dataArray = mydb.sql_read_accounts("")
+        dataArray = mydb.sql_read_accounts(sqlFilter: "") as NSArray
         self.listAccount.removeAllItems()
-        for var i=0; i<dataArray.count; ++i{
+        for i in 0 ..< dataArray.count {
             let accName : String = dataArray[i]["username"] as! String
-            self.listAccount.addItemWithObjectValue(accName)
+            self.listAccount.addItem(withObjectValue: accName)
         }
         if (dataArray.count>0) {
-            self.listAccount.selectItemAtIndex(0)
+            self.listAccount.selectItem(at: 0)
         }
         
         if (self.editId != ""){
-            var ndata = self.mydb.sql_read_select("SELECT * FROM items WHERE id='" + self.editId + "'")
+            var ndata = self.mydb.sql_read_select(sqlStr: "SELECT * FROM items WHERE id='" + self.editId + "'")
             
             if (currentfolder != -10 && currentfolder < 0) {
-                self.listAccount.enabled = false
+                self.listAccount.isEnabled = false
             }
             
             self.adTitle.stringValue = ndata[0]["title"]!
@@ -83,85 +83,85 @@ class new_edit_ebay: NSWindowController {
             }
             
             if ndata[0]["adtype"]! == "1" {
-                adType.selectCellAtRow(1, column: 0)
+                adType.selectCell(atRow: 1, column: 0)
             } else {
-                adType.selectCellAtRow(0, column: 0)
+                adType.selectCell(atRow: 0, column: 0)
             }
             
             if ndata[0]["pricetype"]! == "1" {
-                adPriceType.selectCellAtRow(0, column: 0)
+                adPriceType.selectCell(atRow: 0, column: 0)
             } else if ndata[0]["pricetype"]! == "2" {
-                adPriceType.selectCellAtRow(1, column: 0)
+                adPriceType.selectCell(atRow: 1, column: 0)
             } else {
-                adPriceType.selectCellAtRow(2, column: 0)
+                adPriceType.selectCell(atRow: 2, column: 0)
             }
             
-            for var i=0; i<dataArray.count; ++i{
+            for i in 0 ..< dataArray.count {
                 if dataArray[i]["id"] as! String == ndata[0]["account"]! {
-                    self.listAccount.selectItemAtIndex(i)
+                    self.listAccount.selectItem(at: i)
                     break
                 }
             }
             
             if (ndata[0]["image"]! != ""){
-                imglist.addObject(ndata[0]["image"]!)
+                imglist.add(ndata[0]["image"]!)
             }
             if (ndata[0]["image2"]! != ""){
-                imglist.addObject(ndata[0]["image2"]!)
+                imglist.add(ndata[0]["image2"]!)
             }
             if (ndata[0]["image3"]! != ""){
-                imglist.addObject(ndata[0]["image3"]!)
+                imglist.add(ndata[0]["image3"]!)
             }
             if (ndata[0]["image4"]! != ""){
-                imglist.addObject(ndata[0]["image4"]!)
+                imglist.add(ndata[0]["image4"]!)
             }
             if (ndata[0]["image5"]! != ""){
-                imglist.addObject(ndata[0]["image5"]!)
+                imglist.add(ndata[0]["image5"]!)
             }
             if (ndata[0]["image6"]! != ""){
-                imglist.addObject(ndata[0]["image6"]!)
+                imglist.add(ndata[0]["image6"]!)
             }
             if (ndata[0]["image7"]! != ""){
-                imglist.addObject(ndata[0]["image7"]!)
+                imglist.add(ndata[0]["image7"]!)
             }
             if (ndata[0]["image8"]! != ""){
-                imglist.addObject(ndata[0]["image8"]!)
+                imglist.add(ndata[0]["image8"]!)
             }
             if (ndata[0]["image9"]! != ""){
-                imglist.addObject(ndata[0]["image9"]!)
+                imglist.add(ndata[0]["image9"]!)
             }
             if (ndata[0]["image10"]! != ""){
-                imglist.addObject(ndata[0]["image10"]!)
+                imglist.add(ndata[0]["image10"]!)
             }
             if (ndata[0]["image11"]! != ""){
-                imglist.addObject(ndata[0]["image11"]!)
+                imglist.add(ndata[0]["image11"]!)
             }
             if (ndata[0]["image12"]! != ""){
-                imglist.addObject(ndata[0]["image12"]!)
+                imglist.add(ndata[0]["image12"]!)
             }
             if (ndata[0]["image13"]! != ""){
-                imglist.addObject(ndata[0]["image13"]!)
+                imglist.add(ndata[0]["image13"]!)
             }
             if (ndata[0]["image14"]! != ""){
-                imglist.addObject(ndata[0]["image14"]!)
+                imglist.add(ndata[0]["image14"]!)
             }
             if (ndata[0]["image15"]! != ""){
-                imglist.addObject(ndata[0]["image15"]!)
+                imglist.add(ndata[0]["image15"]!)
             }
             if (ndata[0]["image16"]! != ""){
-                imglist.addObject(ndata[0]["image16"]!)
+                imglist.add(ndata[0]["image16"]!)
             }
             if (ndata[0]["image17"]! != ""){
-                imglist.addObject(ndata[0]["image17"]!)
+                imglist.add(ndata[0]["image17"]!)
             }
             if (ndata[0]["image18"]! != ""){
-                imglist.addObject(ndata[0]["image18"]!)
+                imglist.add(ndata[0]["image18"]!)
             }
             if (ndata[0]["image19"]! != ""){
-                imglist.addObject(ndata[0]["image19"]!)
+                imglist.add(ndata[0]["image19"]!)
             }
             if (ndata[0]["image20"]! != ""){
-                imglist.addObject(ndata[0]["image20"]!)
+                imglist.add(ndata[0]["image20"]!)
             }
             
             if (imglist.count > 0 ){
@@ -202,64 +202,64 @@ class new_edit_ebay: NSWindowController {
             if (returnCode == NSModalResponseOK){
                 self.imglist.removeAllObjects()
                 if (self.picsel.pic1.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic1.getmyfile())
+                    self.imglist.add(self.picsel.pic1.getmyfile())
                 }
                 if (self.picsel.pic2.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic2.getmyfile())
+                    self.imglist.add(self.picsel.pic2.getmyfile())
                 }
                 if (self.picsel.pic3.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic3.getmyfile())
+                    self.imglist.add(self.picsel.pic3.getmyfile())
                 }
                 if (self.picsel.pic4.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic4.getmyfile())
+                    self.imglist.add(self.picsel.pic4.getmyfile())
                 }
                 if (self.picsel.pic5.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic5.getmyfile())
+                    self.imglist.add(self.picsel.pic5.getmyfile())
                 }
                 if (self.picsel.pic6.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic6.getmyfile())
+                    self.imglist.add(self.picsel.pic6.getmyfile())
                 }
                 if (self.picsel.pic7.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic7.getmyfile())
+                    self.imglist.add(self.picsel.pic7.getmyfile())
                 }
                 if (self.picsel.pic8.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic8.getmyfile())
+                    self.imglist.add(self.picsel.pic8.getmyfile())
                 }
                 if (self.picsel.pic9.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic9.getmyfile())
+                    self.imglist.add(self.picsel.pic9.getmyfile())
                 }
                 if (self.picsel.pic10.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic10.getmyfile())
+                    self.imglist.add(self.picsel.pic10.getmyfile())
                 }
                 if (self.picsel.pic11.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic11.getmyfile())
+                    self.imglist.add(self.picsel.pic11.getmyfile())
                 }
                 if (self.picsel.pic12.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic12.getmyfile())
+                    self.imglist.add(self.picsel.pic12.getmyfile())
                 }
                 if (self.picsel.pic13.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic13.getmyfile())
+                    self.imglist.add(self.picsel.pic13.getmyfile())
                 }
                 if (self.picsel.pic14.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic14.getmyfile())
+                    self.imglist.add(self.picsel.pic14.getmyfile())
                 }
                 if (self.picsel.pic15.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic15.getmyfile())
+                    self.imglist.add(self.picsel.pic15.getmyfile())
                 }
                 if (self.picsel.pic16.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic16.getmyfile())
+                    self.imglist.add(self.picsel.pic16.getmyfile())
                 }
                 if (self.picsel.pic17.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic17.getmyfile())
+                    self.imglist.add(self.picsel.pic17.getmyfile())
                 }
                 if (self.picsel.pic18.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic18.getmyfile())
+                    self.imglist.add(self.picsel.pic18.getmyfile())
                 }
                 if (self.picsel.pic19.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic19.getmyfile())
+                    self.imglist.add(self.picsel.pic19.getmyfile())
                 }
                 if (self.picsel.pic20.getmyfile() != ""){
-                    self.imglist.addObject(self.picsel.pic20.getmyfile())
+                    self.imglist.add(self.picsel.pic20.getmyfile())
                 }
             }
         });
@@ -271,63 +271,63 @@ class new_edit_ebay: NSWindowController {
         // Check fields
         var infoArray : NSMutableArray = []
         if (self.catSelButton.toolTip == ""){
-            infoArray.addObject(NSLocalizedString("Category is empty", comment: "Category empty?"))
+            infoArray.add(NSLocalizedString("Category is empty", comment: "Category empty?"))
         }
         
         if (self.adTitle.stringValue == ""){
-            infoArray.addObject(NSLocalizedString("Title is empty", comment: "Title empty?"))
+            infoArray.add(NSLocalizedString("Title is empty", comment: "Title empty?"))
         }
-        if (count(self.adTitle.stringValue) > 65){
-            infoArray.addObject(NSLocalizedString("Reduce title to max 65 chars", comment: "Title Max65"))
+        if (mount(self.adTitle.stringValue, <#UnsafePointer<Int8>!#>) > 65){
+            infoArray.add(NSLocalizedString("Reduce title to max 65 chars", comment: "Title Max65"))
         }
-        if (count(self.adTitle.stringValue) < 10){
-            infoArray.addObject(NSLocalizedString("Title must have minimum 10 chars", comment: "Title Min10"))
+        if (mount(self.adTitle.stringValue, <#UnsafePointer<Int8>!#>) < 10){
+            infoArray.add(NSLocalizedString("Title must have minimum 10 chars", comment: "Title Min10"))
         }
         
         if (self.adDesc.string == ""){
-            infoArray.addObject(NSLocalizedString("Description is empty", comment: "Description empty?"))
+            infoArray.add(NSLocalizedString("Description is empty", comment: "Description empty?"))
         }
-        if (count(self.adDesc.string!) < 10){
-            infoArray.addObject(NSLocalizedString("Description must have minimum 10 chars", comment: "Desc Min10"))
+        if (mount(self.adDesc.string!, <#UnsafePointer<Int8>!#>) < 10){
+            infoArray.add(NSLocalizedString("Description must have minimum 10 chars", comment: "Desc Min10"))
         }
         
         if (self.adPrice.stringValue == "" && self.adPriceType.selectedRow<2){
-            infoArray.addObject(NSLocalizedString("Price is empty", comment: "Price empty?"))
+            infoArray.add(NSLocalizedString("Price is empty", comment: "Price empty?"))
         }
         
         if (self.adYourName.stringValue == ""){
-            infoArray.addObject(NSLocalizedString("Your name is empty", comment: "Your name empty?"))
+            infoArray.add(NSLocalizedString("Your name is empty", comment: "Your name empty?"))
         }
-        if (count(self.adYourName.stringValue) > 30){
-            infoArray.addObject(NSLocalizedString("Reduce your contactname to max 30 chars", comment: "contactname Max30"))
+        if (mount(self.adYourName.stringValue, <#UnsafePointer<Int8>!#>) > 30){
+            infoArray.add(NSLocalizedString("Reduce your contactname to max 30 chars", comment: "contactname Max30"))
         }
-        if (count(self.adYourName.stringValue) < 2){
-            infoArray.addObject(NSLocalizedString("Your contactname must have minimum 2 chars", comment: "contactname Min2"))
+        if (mount(self.adYourName.stringValue, <#UnsafePointer<Int8>!#>) < 2){
+            infoArray.add(NSLocalizedString("Your contactname must have minimum 2 chars", comment: "contactname Min2"))
         }
         
         if (self.adPostalCode.stringValue == ""){
-            infoArray.addObject(NSLocalizedString("Your postalcode is empty", comment: "Your postalcode empty?"))
+            infoArray.add(NSLocalizedString("Your postalcode is empty", comment: "Your postalcode empty?"))
         }
-        if (count(self.adPostalCode.stringValue) > 5){
-            infoArray.addObject(NSLocalizedString("Reduce postalcode to max 5 chars", comment: "postalcode Max5"))
+        if (mount(self.adPostalCode.stringValue, <#UnsafePointer<Int8>!#>) > 5){
+            infoArray.add(NSLocalizedString("Reduce postalcode to max 5 chars", comment: "postalcode Max5"))
         }
         
-        if (count(self.adPhone.stringValue) > 24){
-            infoArray.addObject(NSLocalizedString("Reduce phonenumber to max 24 chars", comment: "phone Max24"))
+        if (mount(self.adPhone.stringValue, <#UnsafePointer<Int8>!#>) > 24){
+            infoArray.add(NSLocalizedString("Reduce phonenumber to max 24 chars", comment: "phone Max24"))
         } else {
             self.adPhone.stringValue = self.adPhone.stringValue.cleanToPhone()
         }
         
         if (self.adCompany.state == 1 && self.adImpress.string == ""){
-            infoArray.addObject(NSLocalizedString("You need a impress for commercial ads", comment: "noimpress"))
+            infoArray.add(NSLocalizedString("You need a impress for commercial ads", comment: "noimpress"))
         }
         
         if (infoArray.count>0){
-            let errFieldList : String = infoArray.componentsJoinedByString("\n")
+            let errFieldList : String = infoArray.componentsJoined(by: "\n")
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Please fill the following fields", comment: "FieldsNeedHeader")
             alert.informativeText = errFieldList
-            alert.addButtonWithTitle(NSLocalizedString("OK", comment: "OK Button"))
+            alert.addButton(withTitle: NSLocalizedString("OK", comment: "OK Button"))
             alert.alertStyle = NSAlertStyle.WarningAlertStyle
             let result = alert.runModal()
             return
@@ -341,15 +341,15 @@ class new_edit_ebay: NSWindowController {
         var picstringnewfields = ""
         var picstringnew = ""
         var currentimagename = ""
-        for var i = 0; i<self.imglist.count; ++i{
+        for i in 0 ..< self.imglist.count {
             if (i==0){
                 currentimagename = "image"
             } else {
                 currentimagename = "image" + String(i+1)
             }
-            picstringupdate += "," + currentimagename + "=" + self.mydb.quotedstring(self.imglist[i])
+            picstringupdate += "," + currentimagename + "=" + self.mydb.quotedstring(identifier: self.imglist[i] as AnyObject)
             picstringnewfields += "," + currentimagename
-            picstringnew += ", " + self.mydb.quotedstring(self.imglist[i])
+            picstringnew += ", " + self.mydb.quotedstring(identifier: self.imglist[i] as AnyObject)
         }
         
         // Build SQL
@@ -358,9 +358,9 @@ class new_edit_ebay: NSWindowController {
             sqlStr += "'" + selectedAccount + "',"
             sqlStr += "'template',"
             sqlStr += "'" + String(self.adPrice.integerValue) + "',"
-            sqlStr += self.mydb.quotedstring(self.adTitle.stringValue) + ","
-            sqlStr += self.mydb.quotedstring(self.catSelButton.title) + ","
-            sqlStr += self.mydb.quotedstring(self.catSelButton.toolTip) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adTitle.stringValue as AnyObject) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.catSelButton.title as AnyObject) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.catSelButton.toolTip as AnyObject) + ","
             sqlStr += "0," // shipping provided?
             sqlStr += "'" + String(self.currentfolder) + "',"
             
@@ -380,23 +380,23 @@ class new_edit_ebay: NSWindowController {
                 sqlStr += "3,"
             }
             
-            sqlStr += self.mydb.quotedstring(self.adPostalCode.stringValue) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adPostalCode.stringValue as AnyObject) + ","
             
             if self.adCompany.state == 1 {
-                sqlStr += self.mydb.quotedstring("1") + ","
+                sqlStr += self.mydb.quotedstring(identifier: "1" as AnyObject) + ","
             } else {
-                sqlStr += self.mydb.quotedstring("0") + ","
+                sqlStr += self.mydb.quotedstring(identifier: "0" as AnyObject) + ","
             }
             
-            sqlStr += self.mydb.quotedstring(self.adImpress.string) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adImpress.string as AnyObject) + ","
             
-            sqlStr += self.mydb.quotedstring(self.adStreet.stringValue) + ","
-            sqlStr += self.mydb.quotedstring(self.adYourName.stringValue) + ","
-            sqlStr += self.mydb.quotedstring(self.adPhone.stringValue) + ","
-            sqlStr += self.mydb.quotedstring(self.adDesc.string) 
+            sqlStr += self.mydb.quotedstring(identifier: self.adStreet.stringValue as AnyObject) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adYourName.stringValue as AnyObject) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adPhone.stringValue as AnyObject) + ","
+            sqlStr += self.mydb.quotedstring(identifier: self.adDesc.string as AnyObject)
             sqlStr += "\(picstringnew))"
             
-            if self.mydb.executesql(sqlStr){
+            if self.mydb.executesql(sqlStr: sqlStr){
                 self.editId = String(self.mydb.lastId())
                 println("Gespeichert: " + self.editId)
                 self.window?.sheetParent?.endSheet(self.window!, returnCode: NSModalResponseOK)
@@ -407,9 +407,9 @@ class new_edit_ebay: NSWindowController {
             sqlStr = "UPDATE items SET "
             sqlStr += "account='" + selectedAccount + "',"
             sqlStr += "price='" + String(self.adPrice.integerValue) + "',"
-            sqlStr += "title=" + self.mydb.quotedstring(self.adTitle.stringValue) + ","
-            sqlStr += "category=" + self.mydb.quotedstring(self.catSelButton.title) + ","
-            sqlStr += "categoryId="+self.mydb.quotedstring(self.catSelButton.toolTip) + ","
+            sqlStr += "title=" + self.mydb.quotedstring(identifier: self.adTitle.stringValue as AnyObject) + ","
+            sqlStr += "category=" + self.mydb.quotedstring(identifier: self.catSelButton.title as AnyObject) + ","
+            sqlStr += "categoryId="+self.mydb.quotedstring(identifier: self.catSelButton.toolTip as AnyObject) + ","
             // sqlStr += "0,"
             // sqlStr += "'" + String(self.currentfolder) + "',"
             
@@ -425,7 +425,7 @@ class new_edit_ebay: NSWindowController {
                 sqlStr += "company=0,"
             }
             
-            sqlStr += "companyimpress=" + self.mydb.quotedstring(self.adImpress.string) + ","
+            sqlStr += "companyimpress=" + self.mydb.quotedstring(identifier: self.adImpress.string as AnyObject) + ","
             
             // sqlStr += "''," // attribute?
             
@@ -437,14 +437,14 @@ class new_edit_ebay: NSWindowController {
                 sqlStr += "pricetype=3,"
             }
             
-            sqlStr += "postalcode=" + self.mydb.quotedstring(self.adPostalCode.stringValue) + ","
-            sqlStr += "street=" + self.mydb.quotedstring(self.adStreet.stringValue) + ","
-            sqlStr += "myname=" + self.mydb.quotedstring(self.adYourName.stringValue) + ","
-            sqlStr += "myphone=" + self.mydb.quotedstring(self.adPhone.stringValue) + ","
-            sqlStr += "desc=" + self.mydb.quotedstring(self.adDesc.string)
+            sqlStr += "postalcode=" + self.mydb.quotedstring(identifier: self.adPostalCode.stringValue as AnyObject) + ","
+            sqlStr += "street=" + self.mydb.quotedstring(identifier: self.adStreet.stringValue as AnyObject) + ","
+            sqlStr += "myname=" + self.mydb.quotedstring(identifier: self.adYourName.stringValue as AnyObject) + ","
+            sqlStr += "myphone=" + self.mydb.quotedstring(identifier: self.adPhone.stringValue as AnyObject) + ","
+            sqlStr += "desc=" + self.mydb.quotedstring(identifier: self.adDesc.string as AnyObject)
             sqlStr += "\(picstringupdate) WHERE id=" + self.editId
             
-            if self.mydb.executesql(sqlStr){
+            if self.mydb.executesql(sqlStr: sqlStr){
                 self.window?.sheetParent?.endSheet(self.window!, returnCode: NSModalResponseOK)
             } else {
                 // SHOW FAIL!

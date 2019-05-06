@@ -25,23 +25,23 @@ class catselector: NSWindowController {
     }
     
     override func awakeFromNib() {
-        let documents = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+        let documents = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         let path = documents.stringByAppendingPathComponent("ebaykats.ini")
         
-        if (NSFileManager.defaultManager().fileExistsAtPath(path))
+        if (FileManager.defaultManager().fileExistsAtPath(path))
         {
             self.catdata = NSDictionary(contentsOfFile: path)!
         } else {
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("No categoryfile found, please sync your accounts", comment: "NoAccounts")
-            alert.addButtonWithTitle(NSLocalizedString("OK", comment: "OK Button"))
+            alert.addButton(withTitle: NSLocalizedString("OK", comment: "OK Button"))
             alert.alertStyle = NSAlertStyle.CriticalAlertStyle
             let result = alert.runModal()
         }
         
         self.catlisttable.reloadData()
-        if(self.catlisttable.itemAtRow(0) != nil){
-           self.catlisttable.expandItem(self.catlisttable.itemAtRow(0))
+        if(self.catlisttable.item(atRow: 0) != nil){
+            self.catlisttable.expandItem(self.catlisttable.item(atRow: 0))
         }
         
         
@@ -57,41 +57,41 @@ class catselector: NSWindowController {
     }
     
     func outlineView(outlineView: NSOutlineView, selectionIndexesForProposedSelection proposedSelectionIndexes: NSIndexSet) -> NSIndexSet{
-        self.okButton.enabled = false
+        self.okButton.isEnabled = false
         if (proposedSelectionIndexes.count>0){
-            let n : NSDictionary = self.catlisttable.itemAtRow(proposedSelectionIndexes.firstIndex) as! NSDictionary
+            let n : NSDictionary = self.catlisttable.item(atRow: proposedSelectionIndexes.firstIndex) as! NSDictionary
             if (n["children"] != nil){
                 if ((n["children"] as! NSArray).count==0){
-                    self.okButton.enabled = true
+                    self.okButton.isEnabled = true
                 }
             } else {
-                self.okButton.enabled = true
+                self.okButton.isEnabled = true
             }
         }
         
-        if (self.okButton.enabled){
-            var cpath : NSMutableArray = []
-            var cpathIds : NSMutableArray = []
+        if (self.okButton.isEnabled){
+            let cpath : NSMutableArray = []
+            let cpathIds : NSMutableArray = []
             var cpathIdsOK : Bool = false
-            var currentObj: AnyObject? = self.catlisttable.itemAtRow(proposedSelectionIndexes.firstIndex)
+            var currentObj: AnyObject? = self.catlisttable.item(atRow: proposedSelectionIndexes.firstIndex) as AnyObject
             let firstFieldName : String = (currentObj as! NSDictionary)["fieldName"]! as! String
             let firstFieldValue : String = (currentObj as! NSDictionary)["fieldValue"]! as! String
             let firstName : String = (currentObj as! NSDictionary)["name"]! as! String
 
-            cpath.addObject(firstName)
-            cpathIds.insertObject( firstFieldName + "=" + firstFieldValue, atIndex: 0)
+            cpath.add(firstName)
+            cpathIds.insert( firstFieldName + "=" + firstFieldValue, at: 0)
             
-            while (outlineView.parentForItem(currentObj)?.isEqual(self.catdata) == false) {
-                let ob: (AnyObject?) = outlineView.parentForItem(currentObj)
+            while ((outlineView.parent(forItem: currentObj) as AnyObject).isEqual(self.catdata) == false) {
+                let ob: (AnyObject?) = outlineView.parent(forItem: currentObj) as AnyObject
                 
                 let firstFieldName : String = (ob as! NSDictionary)["fieldName"]! as! String
                 let firstFieldValue : String = (ob as! NSDictionary)["fieldValue"]! as! String
                 let firstName : String = (ob as! NSDictionary)["name"]! as! String
                 
-                cpath.insertObject(firstName , atIndex: 0)
+                cpath.insert(firstName , at: 0)
                 
                 if cpathIdsOK == false {
-                    cpathIds.insertObject( firstFieldName + "=" + firstFieldValue, atIndex: 0)
+                    cpathIds.insert( firstFieldName + "=" + firstFieldValue, at: 0)
                 }
                 
                 if firstFieldName == "categoryId" {
@@ -101,8 +101,8 @@ class catselector: NSWindowController {
                 currentObj = ob
             }
             
-            self.selid = cpathIds.componentsJoinedByString("|")
-            self.selpath = cpath.componentsJoinedByString(" -> ")
+            self.selid = cpathIds.componentsJoined(by: "|")
+            self.selpath = cpath.componentsJoined(by: " -> ")
         }
         
         return proposedSelectionIndexes
@@ -113,7 +113,7 @@ class catselector: NSWindowController {
         if (item == nil){
             return self.catdata
         } else {
-            return ((item as! NSDictionary)["children"] as! NSArray).objectAtIndex(index)
+            return ((item as! NSDictionary)["children"] as! NSArray).object(at: index) as AnyObject
         }
     }
     
@@ -142,7 +142,7 @@ class catselector: NSWindowController {
     func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject?{
         if let it = item as? NSDictionary {
             if (it == catdata) {
-                return NSLocalizedString("Categories", comment: "CatselDesc")
+                return NSLocalizedString("Categories", comment: "CatselDesc") as AnyObject
             } else {
                 return it["name"]
             }

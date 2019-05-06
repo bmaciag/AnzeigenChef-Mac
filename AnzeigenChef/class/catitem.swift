@@ -99,7 +99,7 @@ class catitem : NSObject{
     }
     
     func removeChild(c : catitem){
-        for var i=0; i<self.catchilds.count; ++i{
+        for i in 0 ..< self.catchilds.count {
             if (self.catchilds[i] == c){
                 self.catchilds.removeAtIndex(i)
                 break

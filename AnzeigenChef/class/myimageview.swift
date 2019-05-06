@@ -11,8 +11,8 @@ import Cocoa
 class myimageview: NSImageView {
 
     
-    override func drawRect(dirtyRect: NSRect) {
-        super.drawRect(dirtyRect)
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
 
         // Drawing code here.
     }
@@ -23,18 +23,18 @@ class myimageview: NSImageView {
         openPanel.canChooseDirectories = false
         openPanel.canCreateDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.beginWithCompletionHandler { (result) -> Void in
+        openPanel.begin { (result) -> Void in
             if result == NSFileHandlingPanelOKButton {
                 if let da = NSData(contentsOfURL: openPanel.URL!){
                     self.image = NSImage(data: da)
-                    self.toolTip = openPanel.URL?.absoluteString
+                    self.toolTip = openPanel.urlurl?.absoluteString
                 }
             }
         }
     }
     
     func loadPicFromFile(fileName : String) -> Bool{
-        if let da = NSData(contentsOfURL: NSURL(string: fileName)!){
+        if let da = NSData(contentsOfURL: NSURL(string: fileName)! as URL){
             self.image = NSImage(data: da)
             self.toolTip = NSURL(string: fileName)?.absoluteString
             return true

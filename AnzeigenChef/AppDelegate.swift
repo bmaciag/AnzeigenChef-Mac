@@ -56,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     dynamic private var contents: [AnyObject] = []
     
  
-    var firstCatItem : catitem = catitem(cname: NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String, cid: "0", cimg: "", istemplate:false, cparent : NSApp, cgroup : true)
+    var firstCatItem : catitem = catitem(cname: Bundle.main.infoDictionary!["CFBundleName"] as! String, cid: "0", cimg: "", istemplate:false, cparent : NSApp, cgroup : true)
     
     
     var templateCatItem : catitem!
@@ -70,34 +70,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         mydb.opendb();
         
-        let selk : catitem = self.addcat("Activ", myid: "-9", myimg : "NSStatusAvailable", cparent: firstCatItem, is_template:false);
-        self.addcat("Inactive", myid: "-7", myimg : "NSStatusPartiallyAvailable", cparent: firstCatItem, is_template:false);
-        self.addcat("Stopped", myid: "-8", myimg : "NSStatusUnavailable", cparent: firstCatItem, is_template:false);
-        self.templateCatItem = self.addcat("Templates", myid: "-10", myimg: "NSFolder", cparent: firstCatItem, is_template:false);
-        self.itemstableview.doubleAction = Selector("edit:")
-        self.itemstableview.registerForDraggedTypes([kRowPBoardType])
+        let selk : catitem = self.addcat(myname: "Activ", myid: "-9", myimg : "NSStatusAvailable", cparent: firstCatItem, is_template:false);
+        self.addcat(myname: "Inactive", myid: "-7", myimg : "NSStatusPartiallyAvailable", cparent: firstCatItem, is_template:false);
+        self.addcat(myname: "Stopped", myid: "-8", myimg : "NSStatusUnavailable", cparent: firstCatItem, is_template:false);
+        self.templateCatItem = self.addcat(myname: "Templates", myid: "-10", myimg: "NSFolder", cparent: firstCatItem, is_template:false);
+        self.itemstableview.doubleAction = Selector(("edit:"))
+        self.itemstableview.register(forDraggedTypes: [kRowPBoardType])
         self.loadCats()
         
-        searchCat = self.addcat("Search", myid: "-5", myimg: "NSQuickLookTemplate", cparent: firstCatItem, is_template: false)
+        searchCat = self.addcat(myname: "Search", myid: "-5", myimg: "NSQuickLookTemplate", cparent: firstCatItem, is_template: false)
         self.loadSearch()
         self.updateCatCount()
         
-        self.currentOrderColumn = self.mydb.get_option("currentOrderColumn", defaultstr: "id")
-        self.currentOrderWay = self.mydb.get_option("currentOrderWay", defaultstr: "DESC")
+        self.currentOrderColumn = self.mydb.get_option(oname: "currentOrderColumn", defaultstr: "id")
+        self.currentOrderWay = self.mydb.get_option(oname: "currentOrderWay", defaultstr: "DESC")
         
-        self.catlist.setDataSource(self)
+        self.catlist.dataSource = self
         self.catlist.reloadData()
         self.catlist.expandItem(firstCatItem)
         self.catlist.expandItem(templateCatItem)
         self.catlist.expandItem(searchCat)
-        self.catlist.registerForDraggedTypes([kNodesPBoardType,kRowPBoardType])
-        self.catlist.setDelegate(self)
-        self.catlist.selectRowIndexes(NSIndexSet(index: catlist.rowForItem(selk)), byExtendingSelection: true)
+        self.catlist.register(forDraggedTypes: [kNodesPBoardType,kRowPBoardType])
+        self.catlist.delegate = self
+        self.catlist.selectRowIndexes(NSIndexSet(index: catlist.row(forItem: selk)) as IndexSet, byExtendingSelection: true)
         self.currentFolderLabel.stringValue = selk.get_catname()
         self.currentFolderID = -9
-        self.load_data("folder=-9")
+        self.load_data(filterStr: "folder=-9")
         
-        for var i=0; i < cat_start_expandlist.count; ++i {
+        for i in 0 ..< cat_start_expandlist.count {
             self.catlist.expandItem(cat_start_expandlist[i])
         }
         
@@ -116,12 +116,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
    
     
     
-    override func validateMenuItem(menuItem: NSMenuItem) -> Bool {
+    override func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         self.catlastclickrow = catlist.clickedRow
         
-        if menuItem.action == Selector("addFolderAction:") {
+        if menuItem.action == Selector(("addFolderAction:")) {
             if (self.catlastclickrow > -1){
-                let clickedItem : catitem = catlist.itemAtRow(self.catlastclickrow) as! catitem
+                let clickedItem : catitem = catlist.item(atRow: self.catlastclickrow) as! catitem
                 if (clickedItem.istemplate() || clickedItem.get_catid() == "-10" ){
                     return true
                 } else {
@@ -132,9 +132,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("renameFolderAction:") {
+        if menuItem.action == Selector(("renameFolderAction:")) {
             if (self.catlastclickrow > -1){
-                let clickedItem : catitem = catlist.itemAtRow(self.catlastclickrow) as! catitem
+                let clickedItem : catitem = catlist.item(atRow: self.catlastclickrow) as! catitem
                 if (clickedItem.istemplate()){
                     return true
                 } else {
@@ -145,9 +145,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("editSearch:") {
+        if menuItem.action == Selector(("editSearch:")) {
             if (self.catlastclickrow > 0){
-                let clickedItem : catitem = catlist.itemAtRow(self.catlastclickrow) as! catitem
+                let clickedItem : catitem = catlist.item(atRow: self.catlastclickrow) as! catitem
                 if (clickedItem.get_parent().get_catid() == "-5"){
                     return true
                 } else {
@@ -158,9 +158,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("deleteFolderAction:") {
+        if menuItem.action == Selector(("deleteFolderAction:")) {
             if (self.catlastclickrow > -1){
-                let clickedItem : catitem = catlist.itemAtRow(self.catlastclickrow) as! catitem
+                let clickedItem : catitem = catlist.item(atRow: self.catlastclickrow) as! catitem
                 if (clickedItem.istemplate() || clickedItem.get_parent().get_catid() == "-5"){
                     return true
                 } else {
@@ -171,7 +171,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("edit:") {
+        if menuItem.action == Selector(("edit:")) {
             if (self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -179,7 +179,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("duplicateAction:") {
+        if menuItem.action == Selector(("duplicateAction:")) {
             if (self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -188,7 +188,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         }
         
         
-        if menuItem.action == Selector("deactivate:") && menuItem.tag == 876 {
+        if menuItem.action == Selector(("deactivate:")) && menuItem.tag == 876 {
             if (self.currentFolderID == -9 && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -196,7 +196,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("deactivate:") && menuItem.tag == 877 {
+        if menuItem.action == Selector(("deactivate:")) && menuItem.tag == 877 {
             if (self.currentFolderID == -7 && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -204,7 +204,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("stopad:") {
+        if menuItem.action == Selector(("stopad:")) {
             if ((self.currentFolderID == -9 || self.currentFolderID == -7) && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -212,7 +212,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("sendNow:") {
+        if menuItem.action == Selector(("sendNow:")) {
             if ((self.currentFolderID == -10 || self.currentFolderID > 0) && self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -220,7 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("printFlyerAction:") {
+        if menuItem.action == Selector(("printFlyerAction:")) {
             if ((self.currentFolderID == -9) && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -228,7 +228,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("delete:") {
+        if menuItem.action == #selector(NSText.delete(_:)) {
             if ((self.currentFolderID == -10 || self.currentFolderID > 0 || self.currentFolderID == -8) && self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -236,7 +236,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if menuItem.action == Selector("showOnlineAction:") {
+        if menuItem.action == Selector(("showOnlineAction:")) {
             if (((self.currentFolderID < 0 && self.currentFolderID != -10) || currentFolderParentID == -5) && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -245,11 +245,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             
         }
         
-        return menuItem.enabled
+        return menuItem.isEnabled
     }
     
-    override func validateToolbarItem(theItem: NSToolbarItem) -> Bool {
-        if theItem.action == Selector("syncbutton:") {
+    override func validateToolbarItem(_ theItem: NSToolbarItem) -> Bool {
+        if theItem.action == Selector(("syncbutton:")) {
             if syncinprocess {
                 return false
             } else {
@@ -257,7 +257,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("duplicateAction:") {
+        if theItem.action == Selector(("duplicateAction:")) {
             if (self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -265,7 +265,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("deactivate:") && theItem.tag == 876 {
+        if theItem.action == Selector(("deactivate:")) && theItem.tag == 876 {
             if (self.currentFolderID == -9 && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -273,7 +273,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("deactivate:") && theItem.tag == 877 {
+        if theItem.action == Selector(("deactivate:")) && theItem.tag == 877 {
             if (self.currentFolderID == -7 && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -281,7 +281,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("stopad:") {
+        if theItem.action == Selector(("stopad:")) {
             if ((self.currentFolderID == -9 || self.currentFolderID == -7) && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -289,7 +289,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("printFlyerAction:") {
+        if theItem.action == Selector(("printFlyerAction:")) {
             if ((self.currentFolderID == -9 ) && self.itemstableview.selectedRow > -1){
                 return true
             } else {
@@ -297,7 +297,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("sendNow:") {
+        if theItem.action == Selector(("sendNow:")) {
             if (self.currentFolderID == -9){
                 theItem.label = "Update now"
             } else {
@@ -311,7 +311,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        if theItem.action == Selector("delete:") {
+        if theItem.action == #selector(NSText.delete(_:)) {
             if ((self.currentFolderID == -10 || self.currentFolderID > 0 || self.currentFolderID == -8) && self.itemstableview.selectedRow > -1 && self.currentFolderParentID != -5){
                 return true
             } else {
@@ -319,7 +319,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             }
         }
         
-        return theItem.enabled
+        return theItem.isEnabled
     }
     
     //MARK: Outline
@@ -332,7 +332,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
         if let it = item as? catitem {
-            return it.childAtIndex(index)
+            return it.childAtIndex(i: index)
         } else {
             return self.firstCatItem;
         }
@@ -359,16 +359,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject?{
         if let it = item as? catitem {
-            return it.get_catname()
+            return it.get_catname() as AnyObject
         }
         return nil
     }
     
     func outlineView(outlineView: NSOutlineView, viewForTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> NSView?{
         if let it = item as? catitem {
-            let cell = outlineView.makeViewWithIdentifier("catcellident", owner: self) as! NSTableCellView!
+            let cell = outlineView.make(withIdentifier: "catcellident", owner: self) as! NSTableCellView?
             cell?.textField!.stringValue = it.get_catname()
-            if (!(it.getCatImage() as NSString).isEqualToString("")){
+            if (!(it.getCatImage() as NSString).isEqual(to: "")){
                 cell?.imageView?.image = NSImage(named: it.getCatImage())
             } else {
                 cell?.imageView?.image = nil;
@@ -383,12 +383,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     func outlineView(outlineView: NSOutlineView, selectionIndexesForProposedSelection proposedSelectionIndexes: NSIndexSet) -> NSIndexSet{
         
         if (proposedSelectionIndexes.count>0){
-            let n : catitem = self.catlist.itemAtRow(proposedSelectionIndexes.firstIndex) as! catitem
+            let n : catitem = self.catlist.item(atRow: proposedSelectionIndexes.firstIndex) as! catitem
             self.currentFolderLabel.stringValue = n.get_catname()
-            self.currentFolderID = n.get_catid().toInt()!
-            self.currentFolderParentID = n.get_parent().get_catid().toInt()!
+            self.currentFolderID = Int(n.get_catid())!
+            self.currentFolderParentID = Int(n.get_parent().get_catid())!
             self.currentcatitemobj = n;
-            self.load_data("folder="+String(self.currentFolderID))
+            self.load_data(filterStr: "folder="+String(self.currentFolderID))
         }
         return proposedSelectionIndexes
     }
@@ -398,21 +398,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         if myimg == "NSQuickLookTemplate" {
             gr = true
         }
-        var child1 : catitem = catitem(cname: myname, cid: myid, cimg : myimg, istemplate:is_template, cparent : cparent, cgroup: gr)
-        cparent.addChild(child1)
+        let child1 : catitem = catitem(cname: myname, cid: myid, cimg : myimg, istemplate:is_template, cparent : cparent, cgroup: gr)
+        cparent.addChild(c: child1)
         return child1
     }
     
     func outlineView(outlineView: NSOutlineView, shouldExpandItem item: AnyObject) -> Bool {
-        if let it = item as? catitem {
-            self.mydb.executesql("UPDATE folders SET expand=1 WHERE id=" + (item as! catitem).get_catid())
+        if item is catitem {
+            self.mydb.executesql(sqlStr: "UPDATE folders SET expand=1 WHERE id=" + (item as! catitem).get_catid())
         }
         return true
     }
    
     func outlineView(outlineView: NSOutlineView, shouldCollapseItem item: AnyObject) -> Bool {
-        if let it = item as? catitem {
-            self.mydb.executesql("UPDATE folders SET expand=0 WHERE id=" + (item as! catitem).get_catid())
+        if item is catitem {
+            self.mydb.executesql(sqlStr: "UPDATE folders SET expand=0 WHERE id=" + (item as! catitem).get_catid())
         }
         return true
     }
@@ -426,67 +426,67 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     func tableView(tableView: NSTableView, selectionIndexesForProposedSelection proposedSelectionIndexes: NSIndexSet) -> NSIndexSet{
         if (proposedSelectionIndexes.count>0){
-            var n : [String : String] = tableDataArray.objectAtIndex(proposedSelectionIndexes.firstIndex) as! [String : String]
+            var n : [String : String] = tableDataArray.object(at: proposedSelectionIndexes.firstIndex) as! [String : String]
             
             if self.currentFolderParentID == -5 && n["messageunread"]! == "1" {
-                self.mydb.executesql("UPDATE searchqueryurls SET messageunread=0 WHERE id=" + n["id"]!)
+                self.mydb.executesql(sqlStr: "UPDATE searchqueryurls SET messageunread=0 WHERE id=" + n["id"]!)
                 n["messageunread"] = "0"
-                tableDataArray.replaceObjectAtIndex(proposedSelectionIndexes.firstIndex, withObject: n)
-                tableView.reloadDataForRowIndexes(NSIndexSet(index: proposedSelectionIndexes.firstIndex), columnIndexes: NSIndexSet(index: 0))
+                tableDataArray.replaceObject(at: proposedSelectionIndexes.firstIndex, with: n)
+                tableView.reloadData(forRowIndexes: NSIndexSet(index: proposedSelectionIndexes.firstIndex) as IndexSet, columnIndexes: NSIndexSet(index: 0) as IndexSet)
                 currentcatitemobj.reducecatcount()
-                let oldSel : NSIndexSet = self.catlist.selectedRowIndexes
+                let oldSel : NSIndexSet = self.catlist.selectedRowIndexes as NSIndexSet
                 self.catlist.reloadItem(self.searchCat, reloadChildren: true)
-                self.catlist.selectRowIndexes(oldSel, byExtendingSelection: false)
+                self.catlist.selectRowIndexes(oldSel as IndexSet, byExtendingSelection: false)
             }
             
             let this_itemid : String = n["itemid"]!
-            self.messControl.loadData("adid='"+this_itemid+"' ORDER BY receiveddate DESC")
+            self.messControl.loadData(filterStr: "adid='"+this_itemid+"' ORDER BY receiveddate DESC")
         }
         return proposedSelectionIndexes
     }
     
     func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableColumn?, row: Int) -> NSView?{
-        let cell = tableView.makeViewWithIdentifier("itemstablecell", owner: self) as! itemstablecell!
-        let nsdic : [String : String] = tableDataArray.objectAtIndex(row) as! [String : String]
+        let cell = tableView.make(withIdentifier: "itemstablecell", owner: self) as! itemstablecell?
+        let nsdic : [String : String] = tableDataArray.object(at: row) as! [String : String]
         
-        cell.titleLabel.stringValue = nsdic["title"]!
-        cell.descLabel.stringValue = nsdic["desc"]!
-        cell.watchLabel.stringValue = nsdic["watchcount"]!
-        cell.visitLabel.stringValue = nsdic["viewcount"]!
-        cell.postalCodeLabel.stringValue = nsdic["postalcode"]!
+        cell?.titleLabel.stringValue = nsdic["title"]!
+        cell?.descLabel.stringValue = nsdic["desc"]!
+        cell?.watchLabel.stringValue = nsdic["watchcount"]!
+        cell?.visitLabel.stringValue = nsdic["viewcount"]!
+        cell?.postalCodeLabel.stringValue = nsdic["postalcode"]!
         if (nsdic["company"] != nil){
             if (nsdic["company"]! == "1"){
-                cell.postalCodeLabel.stringValue = nsdic["postalcode"]! + " (GW)"
+                cell?.postalCodeLabel.stringValue = nsdic["postalcode"]! + " (GW)"
             }
         }
         
         if (nsdic["image"] != ""){
-            self.loadImage(nsdic["image"]!, myImage: cell.image)
+            self.loadImage(url: nsdic["image"]!, myImage: (cell?.image)!)
         } else {
-            cell.image.image = nil
-            cell.image.setNeedsDisplay()
+            cell?.image.image = nil
+            cell?.image.setNeedsDisplay()
         }
         
         if nsdic["pricetype"]! == "1"{
-            cell.priceLabel.stringValue = nsdic["price"]! + " €"
+            cell?.priceLabel.stringValue = nsdic["price"]! + " €"
         } else if nsdic["pricetype"]! == "2" {
-            cell.priceLabel.stringValue = nsdic["price"]! + " € " + NSLocalizedString("VB", comment: "ItemsTable VB Label")
+            cell?.priceLabel.stringValue = nsdic["price"]! + " € " + NSLocalizedString("VB", comment: "ItemsTable VB Label")
         } else {
-            cell.priceLabel.stringValue = NSLocalizedString("Give away", comment: "ItemsTable GiveAway")
+            cell?.priceLabel.stringValue = NSLocalizedString("Give away", comment: "ItemsTable GiveAway")
         }
         
         if nsdic["adtype"] == "1" {
-            cell.priceLabel.stringValue = NSLocalizedString("Wanted", comment: "ItemsTable Wanted")
+            cell?.priceLabel.stringValue = NSLocalizedString("Wanted", comment: "ItemsTable Wanted")
         }
         
         var messagecount : String = nsdic["messagecount"]!
         if (messagecount == ""){ messagecount = "0" }
-        if messagecount.toInt() > 0 {
-            cell.rightImage.image = NSImage(named: "Talk - Ellipses_48x48")
+        if Int(messagecount)! > 0 {
+            cell?.rightImage.image = NSImage(named: "Talk - Ellipses_48x48")
         } else if nsdic["messageunread"]! == "1" {
-            cell.rightImage.image = NSImage(named: "Tag - Blue_48x48")
+            cell?.rightImage.image = NSImage(named: "Tag - Blue_48x48")
         } else {
-            cell.rightImage.image = nil
+            cell?.rightImage.image = nil
         }
         
         return cell
@@ -500,17 +500,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         }
         
         let mutableArray : NSMutableArray = NSMutableArray()
-        dragRowsArray.removeAll(keepCapacity: false)
+        dragRowsArray.removeAll(keepingCapacity: false)
         
         let indexArray = rowIndexes.toArray()
-        for var i=0; i < indexArray.count; ++i {
+        for i in 0 ..< indexArray.count {
             let itemId = tableDataArray[indexArray[i]]["id"] as! String
             mutableArray.addObject(itemId)
             dragRowsArray.append(itemId)
         }
         
-        let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
-        pboard.setData(data, forType: kRowPBoardType)
+        let data : NSData = NSKeyedArchiver.archivedData(withRootObject: mutableArray) as NSData
+        pboard.setData(data as Data, forType: kRowPBoardType)
         
         return true
     }
@@ -518,95 +518,95 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     func tableView(tableView: NSTableView, didClickTableColumn tableColumn: NSTableColumn){
         
         if self.currentOrderColumn == "id" {
-            self.sortMenu.itemWithTag(911)?.state = 1
+            self.sortMenu.item(withTag: 911)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(911)?.state = 0
+            self.sortMenu.item(withTag: 911)?.state = 0
         }
         
         if self.currentOrderColumn == "enddate" {
-            self.sortMenu.itemWithTag(912)?.state = 1
+            self.sortMenu.item(withTag: 912)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(912)?.state = 0
+            self.sortMenu.item(withTag: 912)?.state = 0
         }
         
         if self.currentOrderColumn == "watchcount" {
-            self.sortMenu.itemWithTag(913)?.state = 1
+            self.sortMenu.item(withTag: 913)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(913)?.state = 0
+            self.sortMenu.item(withTag: 913)?.state = 0
         }
         
         if self.currentOrderColumn == "viewcount" {
-            self.sortMenu.itemWithTag(914)?.state = 1
+            self.sortMenu.item(withTag: 914)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(914)?.state = 0
+            self.sortMenu.item(withTag: 914)?.state = 0
         }
         
         if self.currentOrderColumn == "adtype" {
-            self.sortMenu.itemWithTag(915)?.state = 1
+            self.sortMenu.item(withTag: 915)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(915)?.state = 0
+            self.sortMenu.item(withTag: 915)?.state = 0
         }
         
         if self.currentOrderColumn == "messagecount" {
-            self.sortMenu.itemWithTag(916)?.state = 1
+            self.sortMenu.item(withTag: 916)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(916)?.state = 0
+            self.sortMenu.item(withTag: 916)?.state = 0
         }
         
         if self.currentOrderWay == "ASC" {
-            self.sortMenu.itemWithTag(930)?.state = 1
+            self.sortMenu.item(withTag: 930)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(930)?.state = 0
+            self.sortMenu.item(withTag: 930)?.state = 0
         }
         
         if self.currentOrderWay == "DESC" {
-            self.sortMenu.itemWithTag(931)?.state = 1
+            self.sortMenu.item(withTag: 931)?.state = 1
         } else {
-            self.sortMenu.itemWithTag(931)?.state = 0
+            self.sortMenu.item(withTag: 931)?.state = 0
         }
         
-        self.sortMenu.popUpMenuPositioningItem(nil, atLocation: NSPoint(x: 0, y: self.rightView.bounds.origin.y + self.rightView.bounds.size.height - 30 /* BOX */ - 20), inView: self.rightView)
+        self.sortMenu.popUp(positioning: nil, at: NSPoint(x: 0, y: self.rightView.bounds.origin.y + self.rightView.bounds.size.height - 30 /* BOX */ - 20), in: self.rightView)
     }
     
  
     @IBAction func reOrderTableData(sender: AnyObject) {
-        if sender.tag() == 911 {
+        if sender.tag == 911 {
             self.currentOrderColumn = "id"
         }
         
-        if sender.tag() == 912 {
+        if sender.tag == 912 {
             self.currentOrderColumn = "enddate"
         }
         
-        if sender.tag() == 913 {
+        if sender.tag == 913 {
             self.currentOrderColumn = "watchcount"
         }
         
-        if sender.tag() == 914 {
+        if sender.tag == 914 {
             self.currentOrderColumn = "viewcount"
         }
         
-        if sender.tag() == 915 {
+        if sender.tag == 915 {
             self.currentOrderColumn = "adtype"
         }
         
-        if sender.tag() == 916 {
+        if sender.tag == 916 {
             self.currentOrderColumn = "messagecount"
         }
         
-        if sender.tag() == 930 {
+        if sender.tag == 930 {
             self.currentOrderWay = "ASC"
         }
         
-        if sender.tag() == 931 {
+        if sender.tag == 931 {
             self.currentOrderWay = "DESC"
         }
         
-        self.mydb.set_option("currentOrderColumn", oval: self.currentOrderColumn)
-        self.mydb.set_option("currentOrderWay", oval: self.currentOrderWay)
+        self.mydb.set_option(oname: "currentOrderColumn", oval: self.currentOrderColumn)
+        self.mydb.set_option(oname: "currentOrderWay", oval: self.currentOrderWay)
         
         
-        self.load_data(self.currentFilter)
+        self.load_data(filterStr: self.currentFilter)
     }
     
     
@@ -614,20 +614,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     //MARK: CatList DragDROP!
     func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool{
         let mutableArray : NSMutableArray = NSMutableArray()
-        dragNodesArray.removeAll(keepCapacity: false)
+        dragNodesArray.removeAll(keepingCapacity: false)
         
         for object : AnyObject in items{
             if (object is catitem ) {
                 if (!(object as! catitem).istemplate() || (object as! catitem).get_catid() == "-10" ) {
                     return false
                 }
-                mutableArray.addObject((object as! catitem).get_catid())
+                mutableArray.add((object as! catitem).get_catid())
                 dragNodesArray.append(object as! catitem)
             }
         }
         
-        let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(mutableArray)
-        pasteboard.setData(data, forType: kNodesPBoardType)
+        let data : NSData = NSKeyedArchiver.archivedData(withRootObject: mutableArray) as NSData
+        pasteboard.setData(data as Data, forType: kNodesPBoardType)
         
         return true
     }
@@ -641,8 +641,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             if (item == nil) {
                 result = .None
             } else {
-                if (item as! catitem).get_catid().toInt() == -10 || (item as! catitem).get_catid().toInt() > 0 {
-                    result = .Move
+                if Int((item as! catitem).get_catid())! == -10 || Int((item as! catitem).get_catid()) > 0 {
+                    result = .move
                 } else {
                     result = .None
                 }
@@ -681,28 +681,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             mycheckitem = mycheckitem.get_parent()
         }
 
-        result = .Move
+        result = .move
         return result
     }
 
     func outlineView(outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, childIndex index: Int) -> Bool {
         
         if (info.draggingSource() === self.itemstableview) {
-            for var i=0; i < dragRowsArray.count; ++i {
-                if (self.mydb.executesql("UPDATE items SET folder='"+(item as! catitem).get_catid()+"' WHERE id="+dragRowsArray[i])){
+            for i in 0 ..< dragRowsArray.count {
+                if (self.mydb.executesql(sqlStr: "UPDATE items SET folder='"+(item as! catitem).get_catid()+"' WHERE id="+dragRowsArray[i])){
                     
                 }
             }
-            self.load_data(currentFilter)
+            self.load_data(filterStr: currentFilter)
             return true
         }
         
-        if (self.mydb.executesql("UPDATE folders SET folderparentid='"+(item as! catitem).get_catid()+"' WHERE id="+(dragNodesArray[0] as catitem).get_catid())){
-            (dragNodesArray[0] as catitem).get_parent().removeChild((dragNodesArray[0] as catitem))
-            (item as! catitem).addChild((dragNodesArray[0] as catitem))
-            (dragNodesArray[0] as catitem).set_parent((item as! catitem))
+        if (self.mydb.executesql(sqlStr: "UPDATE folders SET folderparentid='"+(item as! catitem).get_catid()+"' WHERE id="+(dragNodesArray[0] as catitem).get_catid())){
+            (dragNodesArray[0] as catitem).get_parent().removeChild(c: (dragNodesArray[0] as catitem))
+            (item as! catitem).addChild(c: (dragNodesArray[0] as catitem))
+            (dragNodesArray[0] as catitem).set_parent(newParent: (item as! catitem))
             catlist.reloadData()
-            catlist.selectRowIndexes(NSIndexSet(index:catlist.rowForItem((dragNodesArray[0] as catitem))), byExtendingSelection: true)
+            catlist.selectRowIndexes(NSIndexSet(index:catlist.row(forItem: (dragNodesArray[0] as catitem))) as IndexSet, byExtendingSelection: true)
             
             return true
         }
@@ -733,19 +733,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     @IBAction func syncbutton(sender: AnyObject) {
         self.syncinprocess = true
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default, 0).async() {
             // cats done?
             var catsdone = false
             // get accounts
-            var dataArray : [[String : String]] = self.mydb.sql_read_accounts("")
+            var dataArray : [[String : String]] = self.mydb.sql_read_accounts(sqlFilter: "")
             // setup visual progress
             self.progressBar.maxValue = Double(dataArray.count)
             self.progressBar.doubleValue = 0
             self.progressBar.startAnimation(self)
             // move all running items to stopped
-            self.mydb.executesql("UPDATE items SET folder=-8 WHERE folder=-9")
+            self.mydb.executesql(sqlStr: "UPDATE items SET folder=-8 WHERE folder=-9")
             
-            for var i=0; i<dataArray.count; ++i{
+            for i in 0 ..< dataArray.count {
                 self.progressBar.doubleValue = Double(i)
                 self.progressBar.startAnimation(self)
                 let uname : String = dataArray[i]["username"]!
@@ -755,7 +755,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 self.myhttpcl.logout_ebay_account()
                 
                 // Login
-                let isok : Bool = self.myhttpcl.check_ebay_account(uname, password: upass)
+                let isok : Bool = self.myhttpcl.check_ebay_account(username: uname, password: upass)
                 if (isok == false){
                     println("Login für " + uname + " nicht möglich :( ")
                     continue
@@ -763,7 +763,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 
                 // Login ok, load cats
                 if (catsdone == false){
-                    let documents = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
+                    let documents = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
                     let path = documents.stringByAppendingPathComponent("ebaykats.ini")
                     let m = httpcl()
                     let catdata : NSDictionary = m.getcats_ebay()
@@ -772,47 +772,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 }
                 
                 // get items
-                let thelist : NSArray = self.myhttpcl.shortlist_ebay_account(uname, password: upass)
+                let thelist : NSArray = self.myhttpcl.shortlist_ebay_account(username: uname, password: upass)
                 
                 // get conversations
-                let conv : NSArray = self.myhttpcl.conversation_ebay(uname, password: upass)
+                let conv : NSArray = self.myhttpcl.conversation_ebay(username: uname, password: upass)
  
                 self.progressBar.maxValue = Double(thelist.count+conv.count)
                 self.progressBar.doubleValue = 0
                 
-                for var ii=0; ii<thelist.count; ++ii{
+                for ii in 0 ..< thelist.count {
                     self.progressBar.doubleValue+=1
                     if let ditem = thelist[ii] as? NSDictionary {
-                        let cditem = self.fixdicttostrings(ditem)
+                        let cditem = self.fixdicttostrings(oldDic: ditem)
                         let accountid : String = dataArray[i]["id"]!
                         let itemid : String = cditem["id"]! as! String
                         
                         // check if exists
-                        let checkCount = self.mydb.sql_read_select("SELECT COUNT(*) AS M FROM items WHERE itemid='" + itemid + "' AND account=" + accountid)
-                        let foundItem : Bool = checkCount[0]["M"]?.toInt() > 0
+                        let checkCount = self.mydb.sql_read_select(sqlStr: "SELECT COUNT(*) AS M FROM items WHERE itemid='" + itemid + "' AND account=" + accountid)
+                        let foundItem : Bool = Int(checkCount[0]["M"]) > 0
                         
                         var sqlstr : String = "INSERT OR IGNORE INTO items (account,itemid) VALUES (";
                         sqlstr += dataArray[i]["id"]! + ","
-                        sqlstr += self.mydb.quotedstring(cditem["id"]) + ")"
-                        if (self.mydb.executesql(sqlstr)){
+                        sqlstr += self.mydb.quotedstring(identifier: cditem["id"]) + ")"
+                        if (self.mydb.executesql(sqlStr: sqlstr)){
                             var sqlstr : String = "UPDATE items SET ";
-                            sqlstr += "category="+self.mydb.quotedstring(cditem["category"]) + ","
+                            sqlstr += "category="+self.mydb.quotedstring(identifier: cditem["category"]) + ","
                             
                             if cditem["endDate"] != nil {
-                                var dateFormatter = NSDateFormatter()
+                                var dateFormatter = DateFormatter()
                                 dateFormatter.dateFormat = "dd.MM.yyyy"
-                                let date = dateFormatter.dateFromString(cditem["endDate"] as! String)
+                                let date = dateFormatter.date(from: cditem["endDate"] as! String)
                                 dateFormatter.dateFormat = "yyyy-MM-dd"
-                                var endDate = dateFormatter.stringFromDate(date!)
-                                sqlstr += "enddate="+self.mydb.quotedstring(endDate) + ","
+                                var endDate = dateFormatter.string(from: date!)
+                                sqlstr += "enddate="+self.mydb.quotedstring(identifier: endDate) + ","
                             } else {
                                 sqlstr += "enddate='',"
                             }
-                            sqlstr += "viewcount="+self.mydb.quotedstring(cditem["viewCount"]) + ","
-                            sqlstr += "watchcount="+self.mydb.quotedstring(cditem["watchCount"]) + ","
-                            sqlstr += "state="+self.mydb.quotedstring(cditem["state"]) + ","
-                            sqlstr += "seourl="+self.mydb.quotedstring(cditem["seoUrl"]) + ","
-                            sqlstr += "shippingprovided="+self.mydb.quotedstring(cditem["shippingProvided"]) + ","
+                            sqlstr += "viewcount="+self.mydb.quotedstring(identifier: cditem["viewCount"]) + ","
+                            sqlstr += "watchcount="+self.mydb.quotedstring(identifier: cditem["watchCount"]) + ","
+                            sqlstr += "state="+self.mydb.quotedstring(identifier: cditem["state"]) + ","
+                            sqlstr += "seourl="+self.mydb.quotedstring(identifier: cditem["seoUrl"]) + ","
+                            sqlstr += "shippingprovided="+self.mydb.quotedstring(identifier: cditem["shippingProvided"]) + ","
                             
                             // details
                             // only if not exists!
@@ -821,10 +821,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                                 if (cditem["state"] as! String == "paused"){
                                     folderNow = "-7"
                                 }
-                                sqlstr += "folder=\(folderNow) WHERE itemid="+self.mydb.quotedstring(cditem["id"])
-                                self.mydb.executesql(sqlstr)
+                                sqlstr += "folder=\(folderNow) WHERE itemid="+self.mydb.quotedstring(identifier: cditem["id"])
+                                self.mydb.executesql(sqlStr: sqlstr)
                             } else {
-                                let detailData = self.myhttpcl.get_ad_details(cditem["id"] as! String)
+                                let detailData = self.myhttpcl.get_ad_details(adId: cditem["id"] as! String)
                                 if (detailData["ad_title"] != nil){
                                     sqlstr += "title=" + self.mydb.quotedstring(detailData["ad_title"]) + ","
                                 }
@@ -876,7 +876,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                                 if (detailData["imglist"] != nil){
                                     let imglist : NSMutableArray = detailData["imglist"]! as! NSMutableArray
                                     var incer = 1
-                                    for var i = 0; i < imglist.count; ++i {
+                                    for i in 0 ..< imglist.count {
                                         if incer == 1 {
                                             sqlstr += "image" + "=" + self.mydb.quotedstring(imglist[i]) + ","
                                         } else {
@@ -897,8 +897,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                                 if (cditem["state"] as! String == "paused"){
                                     folderNow = "-7"
                                 }
-                                sqlstr += "folder=\(folderNow) WHERE itemid="+self.mydb.quotedstring(cditem["id"])
-                                self.mydb.executesql(sqlstr)
+                                sqlstr += "folder=\(folderNow) WHERE itemid="+self.mydb.quotedstring(identifier: cditem["id"])
+                                self.mydb.executesql(sqlStr: sqlstr)
                             }
                             
                         }
@@ -910,7 +910,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 
                 
                 // now conversations to db..
-                for var ii=0; ii<conv.count; ++ii{
+                for ii in 0 ..< conv.count {
                     self.progressBar.doubleValue+=1
                     if let ditem = conv[ii] as? NSDictionary {
                         let cditem = self.fixdicttostrings(ditem)
@@ -945,7 +945,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                         
                         // Get messagedetails...
                         let conv_messages : NSArray = self.myhttpcl.conversation_detail_ebay(uname, password: upass, cid: cditem["id"] as! String)
-                        for var iii=0; iii<conv_messages.count; ++iii{
+                        for iii in 0 ..< conv_messages.count {
                             if let convitem = conv_messages[iii] as? NSDictionary {
                                 let cdconvitem = self.fixdicttostrings(convitem)
                                 var sqlstr : String = "INSERT OR IGNORE INTO conversations_text (account, textshort, textshorttrimmed, boundness, type, receiveddate, attachments, cid, unread) VALUES ("
@@ -964,7 +964,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                                 
                                 var attachStr = ""
                                 if  let new_attachments = conv_messages[iii]["attachments"] as? NSArray {
-                                    for var ai=0; ai<new_attachments.count; ++ai{
+                                    for ai in 0 ..< new_attachments.count {
                                         let new_attachments_item = self.fixdicttostrings(new_attachments[ai] as! NSDictionary)
                                         if new_attachments_item["format"] as! String == "image/jpeg" {
                                             attachStr += "<img src=\"" + (new_attachments_item["url"] as! String) + "\" height=120><br/><br/>"
@@ -989,13 +989,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 }
                 
                 // Update Message Counts
-                let mcountquery = self.mydb.sql_read_select("SELECT count(*) AS M, adid, account FROM conversations GROUP BY account,adid")
-                for var m = 0; m < mcountquery.count; ++m {
+                let mcountquery = self.mydb.sql_read_select(sqlStr: "SELECT count(*) AS M, adid, account FROM conversations GROUP BY account,adid")
+                for m in 0 ..< mcountquery.count {
                     let mdic = mcountquery[m]
                     let mdic_adid : String = mdic["adid"]!
                     let mdic_count : String = mdic["M"]!
                     let mdic_account : String = mdic["account"]!
-                    self.mydb.executesql("UPDATE items SET messagecount='" + mdic_count + "' WHERE itemid='" + mdic_adid + "' AND account='" + mdic_account + "'")
+                    self.mydb.executesql(sqlStr: "UPDATE items SET messagecount='" + mdic_count + "' WHERE itemid='" + mdic_adid + "' AND account='" + mdic_account + "'")
                 }
                 // end
             }
@@ -1022,32 +1022,32 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     func sync_search(){
         self.syncinprocess = true
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-            var dataArray : [[String : String]] = self.mydb.sql_read_select("SELECT * FROM searchquery WHERE active=1")
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0).async(DispatchQueue.global) {
+            var dataArray : [[String : String]] = self.mydb.sql_read_select(sqlStr: "SELECT * FROM searchquery WHERE active=1")
             self.progressBar.maxValue = Double(dataArray.count)
             self.progressBar.doubleValue = 0
-            for var i=0; i<dataArray.count; ++i {
+            for i in 0 ..< dataArray.count {
                 self.progressBar.doubleValue = self.progressBar.doubleValue + 1
                 // self.mydb.executesql("DELETE FROM searchqueryurls WHERE searchquery_id=" + dataArray[i]["id"]!)
-                let mdata : [[String : String]] = self.myhttpcl.get_search(dataArray[i])
-                for var ii=0; ii<mdata.count; ++ii {
+                let mdata : [[String : String]] = self.myhttpcl.get_search(sdate: dataArray[i])
+                for ii in 0 ..< mdata.count {
                     var sqlstr = "INSERT OR IGNORE INTO searchqueryurls (searchquery_id,image,title,seourl,desc,price,postalcode,pricetype,folder,messageunread) VALUES (" + dataArray[i]["id"]! + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["image"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["title"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["url"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["desc"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["price"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["dist"]) + ","
-                    sqlstr += self.mydb.quotedstring(mdata[ii]["pricetype"]) + ","
-                    sqlstr += self.mydb.quotedstring(dataArray[i]["id"]!) + ",1)"
-                    self.mydb.executesql(sqlstr)
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["image"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["title"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["url"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["desc"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["price"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["dist"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: mdata[ii]["pricetype"]) + ","
+                    sqlstr += self.mydb.quotedstring(identifier: dataArray[i]["id"]!) + ",1)"
+                    self.mydb.executesql(sqlStr: sqlstr)
                 }
             }
         
             self.progressBar.doubleValue = 0
             self.progressBar.stopAnimation(self)
             
-            dispatch_async(dispatch_get_main_queue()) {
+            dispatch_get_main_queue().async() {
                 self.progressBar.doubleValue = self.progressBar.maxValue
                 self.progressBar.stopAnimation(self)
                 self.syncinprocess = false
@@ -1061,24 +1061,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     func loadImage(url:String, myImage: NSImageView) {
         let image_url:String = url.stringByAddingPercentEscapesUsingEncoding(NSASCIIStringEncoding)!
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        DispatchQueue.global(DispatchQueue.GlobalQueuePriority.default, 0).async() {
             if let new_url : NSURL? = NSURL(string:image_url.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())) {
                 var data:NSData?
                 
                 if url.contains("file:"){
                    data = NSData(contentsOfFile: new_url!.path! )
                 } else {
-                   data = NSData(contentsOfURL: new_url!)
+                    data = NSData(contentsOfURL: new_url! as URL)
                 }
                 
                 var temppic : NSImage?
                 if data == nil{
                     temppic = nil
                 } else {
-                    temppic = NSImage(data: data!)!
+                    temppic = NSImage(data: data! as Data)!
                 }
                 
-                dispatch_async(dispatch_get_main_queue()) {
+                dispatch_get_main_queue().async() {
                     myImage.image = temppic
                 }
             }
@@ -1088,7 +1088,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     }
     
     func fixdicttostrings(oldDic : NSDictionary) -> NSMutableDictionary{
-        var newDic : NSMutableDictionary = NSMutableDictionary.new()
+        let newDic : NSMutableDictionary = NSMutableDictionary()
         for (key, value) in oldDic {
             // checkVal
             var newval : String = ""
@@ -1105,14 +1105,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             } else {
                 newval = ""
             }
-            newDic.setObject(newval, forKey: key as! String)
+            newDic.setObject(newval, forKey: key as! String as NSCopying)
         }
         return newDic
     }
  
     @IBAction func duplicateAction(sender: AnyObject){
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             let id = nsdic["id"]!
  
@@ -1122,21 +1122,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             let alert = NSAlert()
             alert.messageText = NSLocalizedString("Ad is in templates now", comment: "Duplicate message...")
             alert.informativeText = NSLocalizedString("Duplicated ad moved", comment: "Duplicate message header...")
-            alert.addButtonWithTitle(NSLocalizedString("OK", comment: "Alert OK"))
+            alert.addButton(withTitle: NSLocalizedString("OK", comment: "Alert OK"))
             alert.alertStyle = NSAlertStyle.WarningAlertStyle
             let result = alert.runModal()
         }
-        self.load_data(self.currentFilter)
+        self.load_data(filterStr: self.currentFilter)
     }
     
     func delete(sender: NSMenuItem){
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             let id = nsdic["id"]!
             self.mydb.executesql("DELETE FROM items WHERE id=" + id)
         }
-        self.load_data(self.currentFilter)
+        self.load_data(filterStr: self.currentFilter)
     }
     
     func add(sender: NSMenuItem){
@@ -1149,7 +1149,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         self.window!.beginSheet(self.my_new_edit_ebay.window!, completionHandler: {(returnCode) -> Void in
             if (returnCode == NSModalResponseOK){
-                self.load_data(self.currentFilter)
+                self.load_data(filterStr: self.currentFilter)
             }
         });
     }
@@ -1160,7 +1160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         self.window!.beginSheet(self.my_new_edit_search.window!, completionHandler: {(returnCode) -> Void in
             if (returnCode == NSModalResponseOK){
-                self.addcat(self.my_new_edit_search.menuname.stringValue, myid: self.my_new_edit_search.currentEditId , myimg: "Tag - Blue_48x48", cparent: self.searchCat, is_template: false)
+                self.addcat(myname: self.my_new_edit_search.menuname.stringValue, myid: self.my_new_edit_search.currentEditId , myimg: "Tag - Blue_48x48", cparent: self.searchCat, is_template: false)
                 self.catlist.reloadItem(self.searchCat, reloadChildren: true)
                 self.catlist.expandItem(self.searchCat, expandChildren: true)
                 self.sync_search()
@@ -1193,7 +1193,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         self.window!.beginSheet(self.my_new_edit_ebay.window!, completionHandler: {(returnCode) -> Void in
             if (returnCode == NSModalResponseOK){
-                self.load_data(self.currentFilter)
+                self.load_data(filterStr: self.currentFilter)
             }
         });
     }
@@ -1226,7 +1226,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     @IBAction func deactivate(sender: AnyObject) {
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             let current_account : String = nsdic["account"]!
             let current_item : String = nsdic["itemid"]!
@@ -1258,7 +1258,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                 }
             }
         }
-        self.load_data(currentFilter)
+        self.load_data(filterStr: currentFilter)
     }
     
     
@@ -1266,14 +1266,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         let alert = NSAlert()
         alert.messageText = NSLocalizedString("Are you sure you want to delete the selected ads?", comment: "Delete message...")
         alert.informativeText = NSLocalizedString("Deleted ads cannot resume", comment: "Delete message header...")
-        alert.addButtonWithTitle(NSLocalizedString("Yes", comment: "Alert yes"))
-        alert.addButtonWithTitle(NSLocalizedString("No", comment: "Alert no"))
+        alert.addButton(withTitle: NSLocalizedString("Yes", comment: "Alert yes"))
+        alert.addButton(withTitle: NSLocalizedString("No", comment: "Alert no"))
         alert.alertStyle = NSAlertStyle.WarningAlertStyle
         let result = alert.runModal()
         switch(result) {
         case NSAlertFirstButtonReturn:
             let selx = itemstableview.selectedRowIndexes.toArray()
-            for var i=0; i<selx.count; ++i{
+            for i in 0 ..< selx.count {
                 let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
                 let current_account : String = nsdic["account"]!
                 let current_item : String = nsdic["itemid"]!
@@ -1293,7 +1293,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
                     }
                 }
             }
-            self.load_data(currentFilter)
+            self.load_data(filterStr: currentFilter)
         case NSAlertSecondButtonReturn:
             return
         default:
@@ -1312,7 +1312,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             var ndata : NSMutableDictionary = ["modi" : "insert", "data" : nsdic, "status" : "none"]
             self.sendWin.doarray.insertObject(ndata, atIndex: 0)
@@ -1327,7 +1327,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         /*
         
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             let current_account : String = nsdic["account"]!
             let current_id : String = nsdic["id"]!
@@ -1376,7 +1376,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     @IBAction func printFlyerAction(sender: AnyObject) {
         let selx = itemstableview.selectedRowIndexes.toArray()
-        for var i=0; i<selx.count; ++i{
+        for i in 0 ..< selx.count {
             let nsdic : [String : String] = self.tableDataArray.objectAtIndex(selx[i]) as! [String : String]
             let current_account : String = nsdic["account"]!
             let current_id : String = nsdic["id"]!
@@ -1393,13 +1393,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     
     
     @IBAction func websiteButtonAction(sender: AnyObject) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL(string: "http://gastonx.net")!)
+        NSWorkspace.shared().open(NSURL(string: "http://gastonx.net")! as URL)
     }
     
    
     
     @IBAction func spendAction(sender: AnyObject) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL(string: "https://www.paypal.com/de/cgi-bin/webscr?cmd=_xclick&business=hpmacher@gmail.com&item_name=AnzeigenChef%20Spende&currency_code=EUR")!)
+        NSWorkspace.shared().open(NSURL(string: "https://www.paypal.com/de/cgi-bin/webscr?cmd=_xclick&business=hpmacher@gmail.com&item_name=AnzeigenChef%20Spende&currency_code=EUR")! as URL)
     }
     
     
@@ -1416,9 +1416,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             if (returnCode == NSModalResponseOK){
                 if (self.catlastclickrow > -1){
                     
-                    let currentitem = self.catlist.itemAtRow(self.catlastclickrow) as! catitem
-                    if (self.mydb.executesql("INSERT INTO folders (foldername,folderparentid) VALUES ('"+self.folderControl.folderNameEdit.stringValue+"','"+String(currentitem.get_catid())+"')")){
-                        self.addcat(self.folderControl.folderNameEdit.stringValue, myid: String(self.mydb.lastId()), myimg: "NSFolder", cparent: currentitem, is_template: true)
+                    let currentitem = self.catlist.item(atRow: self.catlastclickrow) as! catitem
+                    if (self.mydb.executesql(sqlStr: "INSERT INTO folders (foldername,folderparentid) VALUES ('"+self.folderControl.folderNameEdit.stringValue+"','"+String(currentitem.get_catid())+"')")){
+                        self.addcat(myname: self.folderControl.folderNameEdit.stringValue, myid: String(self.mydb.lastId()), myimg: "NSFolder", cparent: currentitem, is_template: true)
                         self.catlist.reloadItem(currentitem, reloadChildren: true)
                         self.catlist.expandItem(currentitem)
                     }
@@ -1437,7 +1437,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             return
         }
         
-        let currentitem = self.catlist.itemAtRow(self.catlastclickrow) as! catitem
+        let currentitem = self.catlist.item(atRow: self.catlastclickrow) as! catitem
         
         self.folderControl = nil
         self.folderControl = foldercontroller(windowNibName: "foldercontroller");
@@ -1448,9 +1448,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         self.window!.beginSheet(self.folderControl.window!, completionHandler: {(returnCode) -> Void in
             if (returnCode == NSModalResponseOK){
-                if (self.mydb.executesql("UPDATE folders SET foldername='"+self.folderControl.folderNameEdit.stringValue+"' WHERE id="+currentitem.get_catid())){
-                    currentitem.set_catname(self.folderControl.folderNameEdit.stringValue)
-                    self.catlist.reloadDataForRowIndexes(NSIndexSet(index: self.catlastclickrow), columnIndexes: NSIndexSet(index: 0))
+                if (self.mydb.executesql(sqlStr: "UPDATE folders SET foldername='"+self.folderControl.folderNameEdit.stringValue+"' WHERE id="+currentitem.get_catid())){
+                    currentitem.set_catname(newName: self.folderControl.folderNameEdit.stringValue)
+                    self.catlist.reloadData(forRowIndexes: NSIndexSet(index: self.catlastclickrow) as IndexSet, columnIndexes: NSIndexSet(index: 0) as IndexSet)
                 }
             }
         });
@@ -1463,21 +1463,21 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
             return
         }
         
-        let currentitem = self.catlist.itemAtRow(self.catlastclickrow) as! catitem
+        let currentitem = self.catlist.item(atRow: self.catlastclickrow) as! catitem
         
         if currentitem.get_parent().get_catid() == "-5" {
-            self.mydb.executesql("DELETE FROM searchquery WHERE id="+currentitem.get_catid())
-            self.mydb.executesql("DELETE FROM searchqueryurls WHERE searchquery_id="+currentitem.get_catid())
-            currentitem.get_parent().removeChild(currentitem)
+            self.mydb.executesql(sqlStr: "DELETE FROM searchquery WHERE id="+currentitem.get_catid())
+            self.mydb.executesql(sqlStr: "DELETE FROM searchqueryurls WHERE searchquery_id="+currentitem.get_catid())
+            currentitem.get_parent().removeChild(c: currentitem)
             self.catlist.reloadItem(self.searchCat, reloadChildren: true)
             return
         }
         
         
         if (!currentitem.get_parent().isEqual(currentitem)){
-            self.mydb.executesql("DELETE FROM folders WHERE id="+currentitem.get_catid())
-            self.catdelete(currentitem.get_catid())
-            currentitem.get_parent().removeChild(currentitem)
+            self.mydb.executesql(sqlStr: "DELETE FROM folders WHERE id="+currentitem.get_catid())
+            self.catdelete(which: currentitem.get_catid())
+            currentitem.get_parent().removeChild(c: currentitem)
             self.catlist.reloadItem(self.templateCatItem, reloadChildren: true)
         }
     }
@@ -1488,13 +1488,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         self.my_new_edit_search = nil
         self.my_new_edit_search = new_edit_search(windowNibName: "new_edit_search");
         
-        let currentitem = self.catlist.itemAtRow(self.catlastclickrow) as! catitem
+        let currentitem = self.catlist.item(atRow: self.catlastclickrow) as! catitem
         
         self.my_new_edit_search.currentEditId = currentitem.get_catid()
         
         self.window!.beginSheet(self.my_new_edit_search.window!, completionHandler: {(returnCode) -> Void in
             if (returnCode == NSModalResponseOK){
-                currentitem.set_catname(self.my_new_edit_search.menuname.stringValue) 
+                currentitem.set_catname(newName: self.my_new_edit_search.menuname.stringValue)
                 self.catlist.reloadItem(self.searchCat, reloadChildren: true)
             }
         });
@@ -1505,17 +1505,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     //MARK:DB CAT
     func loadCats(){
         
-        let ldata = mydb.sql_read_select("select * from folders WHERE folderparentid='-10' ORDER BY foldername ASC")
-        for var i=0; i<ldata.count; ++i{
+        let ldata = mydb.sql_read_select(sqlStr: "select * from folders WHERE folderparentid='-10' ORDER BY foldername ASC")
+        for i in 0 ..< ldata.count {
             
-            let newcat = self.addcat(ldata[i]["foldername"]!, myid: ldata[i]["id"]!, myimg: "NSFolder", cparent: templateCatItem, is_template: true)
+            let newcat = self.addcat(myname: ldata[i]["foldername"]!, myid: ldata[i]["id"]!, myimg: "NSFolder", cparent: templateCatItem, is_template: true)
 
-            if (ldata[i]["expand"] as String! == "1"){
+            if (ldata[i]["expand"] as String? == "1"){
                 // self.catlist.expandItem(newcat)
-                cat_start_expandlist.addObject(newcat)
+                cat_start_expandlist.add(newcat)
             }
             
-            loadChilds(newcat)
+            loadChilds(fromCat: newcat)
             
         }
         // AB jetzt Schleife, bis nix mehr kommt
@@ -1524,12 +1524,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     }
     
     func updateCatCount(){
-        var countArray : [[String : String]] = self.mydb.sql_read_select("SELECT folder,count(id) AS M FROM searchqueryurls WHERE messageunread=1 GROUP BY folder")
-        for var i = 0; i < countArray.count; ++i {
-            for var o = 0; o < self.searchCat.getChildCount(); ++o {
-                if self.searchCat.childAtIndex(o).get_catid() == countArray[i]["folder"] {
+        var countArray : [[String : String]] = self.mydb.sql_read_select(sqlStr: "SELECT folder,count(id) AS M FROM searchqueryurls WHERE messageunread=1 GROUP BY folder")
+        for i in 0 ..< countArray.count {
+            for o in 0 ..< self.searchCat.getChildCount() {
+                if self.searchCat.childAtIndex(i: o).get_catid() == countArray[i]["folder"] {
                     let newCount : String = countArray[i]["M"]!
-                    self.searchCat.childAtIndex(o).set_cat_count(newCount.toInt()!)
+                    self.searchCat.childAtIndex(i: o).set_cat_count(newCount: Int(newCount)!)
                     break
                 }
             }
@@ -1537,28 +1537,28 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
     }
     
     func loadSearch(){
-        let ldata = mydb.sql_read_select("select * from searchquery")
-        for var i=0; i<ldata.count; ++i{
-            let newcat = self.addcat(ldata[i]["desc"]!, myid: ldata[i]["id"]!, myimg: "Tag - Blue_48x48", cparent: searchCat, is_template: false)
+        let ldata = mydb.sql_read_select(sqlStr: "select * from searchquery")
+        for i in 0 ..< ldata.count {
+            _ = self.addcat(myname: ldata[i]["desc"]!, myid: ldata[i]["id"]!, myimg: "Tag - Blue_48x48", cparent: searchCat, is_template: false)
         }
     }
     
     func loadChilds(fromCat : catitem){
-        let ldata = mydb.sql_read_select("select * from folders WHERE folderparentid='"+fromCat.get_catid()+"' ORDER BY foldername ASC")
-        for var i=0; i<ldata.count; ++i{
-            let newcat = self.addcat(ldata[i]["foldername"]!, myid: ldata[i]["id"]!, myimg: "NSFolder", cparent: fromCat, is_template: true)
-            if (ldata[i]["expand"] as String! == "1"){
-                cat_start_expandlist.addObject(newcat)
+        let ldata = mydb.sql_read_select(sqlStr: "select * from folders WHERE folderparentid='"+fromCat.get_catid()+"' ORDER BY foldername ASC")
+        for i in 0 ..< ldata.count {
+            let newcat = self.addcat(myname: ldata[i]["foldername"]!, myid: ldata[i]["id"]!, myimg: "NSFolder", cparent: fromCat, is_template: true)
+            if (ldata[i]["expand"] as String? == "1"){
+                cat_start_expandlist.add(newcat)
             }
-            self.loadChilds(newcat)
+            self.loadChilds(fromCat: newcat)
         }
     }
     
     func catdelete(which : String){
-        let ldata = mydb.sql_read_select("select * from folders WHERE folderparentid='"+which+"' ORDER BY foldername ASC")
-        for var i=0; i<ldata.count; ++i{
-            self.mydb.executesql("DELETE FROM folders WHERE id="+ldata[i]["id"]!)
-            self.catdelete(ldata[i]["id"]!)
+        let ldata = mydb.sql_read_select(sqlStr: "select * from folders WHERE folderparentid='"+which+"' ORDER BY foldername ASC")
+        for i in 0 ..< ldata.count {
+            self.mydb.executesql(sqlStr: "DELETE FROM folders WHERE id="+ldata[i]["id"]!)
+            self.catdelete(which: ldata[i]["id"]!)
         }
     }
     
@@ -1568,7 +1568,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         // Save old select
         let oldSelect = self.itemstableview.selectedRowIndexes.toArray()
         var idList : NSMutableArray = []
-        for var i = 0; i < oldSelect.count; ++i {
+        for i in 0 ..< oldSelect.count {
             let tItem : [String : String] = self.tableDataArray.objectAtIndex(oldSelect[i]) as! [String : String]
             idList.addObject(tItem["id"]!)
         }
@@ -1596,41 +1596,41 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSOutlineViewDataSource, NSO
         
         (self.itemstableview.tableColumns.last as! NSTableColumn).title = NSLocalizedString("Sort by ", comment: "orderby") + self.currentOrderColumn + " " + otext
         
-        let tempArray = self.mydb.sql_read_select(newFilter)
-        tableDataArray = NSMutableArray.new()
-        for var i = 0; i < tempArray.count; ++i {
-            tableDataArray.addObject(tempArray[i])
+        let tempArray = self.mydb.sql_read_select(sqlStr: newFilter)
+        tableDataArray = NSMutableArray()
+        for i in 0 ..< tempArray.count {
+            tableDataArray.add(tempArray[i])
         }
         
         itemstableview.reloadData()
         
         // After reload, check old selects...
-        var newIndexSet : NSMutableIndexSet = NSMutableIndexSet.new()
-        for var i = 0; i < idList.count; ++i {
-            for var ii = 0; ii < self.tableDataArray.count; ++ii {
-                let tItem : [String : String] = self.tableDataArray.objectAtIndex(ii) as! [String : String]
+        var newIndexSet : NSMutableIndexSet = NSMutableIndexSet()
+        for i in 0 ..< idList.count {
+            for ii in 0 ..< self.tableDataArray.count {
+                let tItem : [String : String] = self.tableDataArray.object(at: ii) as! [String : String]
                 let check1 : String = tItem["id"]!
                 let check2 : String = idList[i] as! String
                 if (check1 == check2){
-                    newIndexSet.addIndex(ii)
+                    newIndexSet.add(ii)
                     break
                 }
             }
         }
         if tableDataArray.count > 0 && newIndexSet.count == 0 {
-            newIndexSet.addIndex(0)
+            newIndexSet.add(0)
         }
         
         
         let itemtext : String = NSLocalizedString("Items", comment: "Quantity of items in current view")
-        var newWinTitle = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String + " "
-        newWinTitle += NSBundle.mainBundle().infoDictionary!["CFBundleShortVersionString"] as! String
+        var newWinTitle = Bundle.main.infoDictionary!["CFBundleName"] as! String + " "
+        newWinTitle += Bundle.mainBundle().infoDictionary!["CFBundleShortVersionString"] as! String
         newWinTitle += " (" + String(tableDataArray.count) + " " + itemtext + ")"
         self.window.title = newWinTitle
         if (tableDataArray.count>0){
             self.itemstableview.allowsEmptySelection = true
-            itemstableview.selectRowIndexes(NSIndexSet.new(), byExtendingSelection: false)
-            itemstableview.selectRowIndexes(newIndexSet, byExtendingSelection: true)
+            itemstableview.selectRowIndexes(NSIndexSet.new() as IndexSet, byExtendingSelection: false)
+            itemstableview.selectRowIndexes(newIndexSet as IndexSet, byExtendingSelection: true)
             self.tableView(itemstableview, selectionIndexesForProposedSelection: newIndexSet)
             self.itemstableview.allowsEmptySelection = false
         } else {

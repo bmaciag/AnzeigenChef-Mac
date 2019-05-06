@@ -33,7 +33,7 @@ class MessageControl: NSObject,NSTableViewDataSource,NSTableViewDelegate {
             if (returnCode == NSModalResponseOK){
                 
                 let selx = self.messTable.selectedRowIndexes.toArray()
-                for var i=0; i<selx.count; ++i{
+                for i in 0 ..< selx.count {
                     let nsdic : [String : String] = self.messDataArray.objectAtIndex(selx[i]) as! [String : String]
                     let current_account : String = nsdic["account"]!
                     let current_id: String = nsdic["id"]!
@@ -151,7 +151,7 @@ class MessageControl: NSObject,NSTableViewDataSource,NSTableViewDelegate {
         htmlstring += "<body>"
         
         var currentcolor = ""
-        for var i=0; i<MessageArray.count; ++i{
+        for i in 0 ..< MessageArray.count {
             let boundnessStr : String = MessageArray[i]["boundness"]!
             let textShortStr : String = MessageArray[i]["textshort"]!
             let receiveddateStr : String = MessageArray[i]["receiveddate"]!

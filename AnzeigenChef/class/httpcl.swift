@@ -89,7 +89,7 @@ class httpcl{
         // Category...
         let catIds : String = sdate["category"]!
         let catArray = catIds.componentsSeparatedByString("|")
-        for var i=0; i<catArray.count; ++i{
+        for i in 0 ..< catArray.count{
             let line : String = catArray[i]
             if line.contains("categoryId="){
                 stringPost += "&categoryId=" + line.getstring("=", endStr: "")
@@ -384,7 +384,7 @@ class httpcl{
                             PostData.addObject("phoneNumber=" + (listData["myphone"] as! String).encodeURL())
                             
                             // Step 3.1: Send images
-                            for var i = 1; i<20; ++i{
+                            for i in 1 ..<20  {
                                 var pi=""
                                 if (i>1){
                                     pi = String(i)
@@ -818,7 +818,7 @@ class httpcl{
                     let attrName = attrStringVal.getstring("name=\"", endStr: "\"")
                     var attrVal = ""
                     let attrOptions : NSArray = attrStringVal.componentsSeparatedByString("</option>")
-                    for var p = 0; p < attrOptions.count; ++p {
+                    for p in 0 ..< attrOptions.count {
                         let attrO = attrOptions[p] as! String
                         if (attrO.contains("selected")){
                             attrVal = attrO.getstring("value=\"", endStr: "\"")

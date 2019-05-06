@@ -268,7 +268,7 @@ class dbfunc{
             
             let cnum = Int(sqlite3_column_count(statement))
             var dataItem = [String : String]()
-            for var i=0; i<cnum; ++i{
+            for i in 0 ..< cnum {
                 let cname = String.fromCString(sqlite3_column_name(statement,Int32(i)))
                 dataItem[cname!] = self.textAt(i,statementx: statement)
             }
@@ -302,7 +302,7 @@ class dbfunc{
         while sqlite3_step(statement) == SQLITE_ROW {
             let cnum = Int(sqlite3_column_count(statement))
             var dataItem = [String : String]()
-            for var i=0; i<cnum; ++i{
+            for i in 0 ..< cnum {
                 let cname = String.fromCString(sqlite3_column_name(statement,Int32(i)))
                 dataItem[cname!] = self.textAt(i,statementx: statement)
             }
@@ -330,7 +330,7 @@ class dbfunc{
         while sqlite3_step(statement) == SQLITE_ROW {
             let cnum = Int(sqlite3_column_count(statement))
             var dataItem = [String : String]()
-            for var i=0; i<cnum; ++i{
+            for i in 0 ..< cnum {
                 let cname = String.fromCString(sqlite3_column_name(statement,Int32(i)))
                 dataItem[cname!] = self.textAt(i,statementx: statement)
             }
